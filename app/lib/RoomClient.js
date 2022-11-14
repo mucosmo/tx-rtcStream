@@ -605,9 +605,9 @@ export default class RoomClient
 
 		this._protoo.on('notification', (notification) =>
 		{
-			logger.debug(
-				'proto "notification" event [method:%s, data:%o]',
-				notification.method, notification.data);
+			// logger.debug(
+			// 	'proto "notification" event [method:%s, data:%o]',
+			// 	notification.method, notification.data);
 
 			switch (notification.method)
 			{
@@ -664,7 +664,7 @@ export default class RoomClient
 
 				case 'downlinkBwe':
 				{
-					logger.debug('\'downlinkBwe\' event:%o', notification.data);
+					// logger.debug('\'downlinkBwe\' event:%o', notification.data);
 
 					break;
 				}

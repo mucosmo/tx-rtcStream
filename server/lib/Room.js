@@ -7,6 +7,9 @@ const Bot = require('./Bot');
 
 const logger = new Logger('Room');
 
+const {publishProducerRtpStream} = require('./gstreamer/transport')
+const GStreamer = require('./gstreamer/command')
+
 /**
  * Room class.
  *
@@ -174,6 +177,7 @@ class Room extends EventEmitter
 	 */
 	handleProtooConnection({ peerId, consume, protooWebSocketTransport })
 	{
+
 		const existingPeer = this._protooRoom.getPeer(peerId);
 
 		if (existingPeer)
@@ -206,6 +210,7 @@ class Room extends EventEmitter
 		peer.data.device = undefined;
 		peer.data.rtpCapabilities = undefined;
 		peer.data.sctpCapabilities = undefined;
+		peer.data.remotePorts = []
 
 		// Have mediasoup related maps ready even before the Peer joins since we
 		// allow creating Transports before joining.
@@ -217,7 +222,7 @@ class Room extends EventEmitter
 
 		peer.on('request', (request, accept, reject) =>
 		{
-			logger.debug(
+			logger.info(
 				'protoo Peer "request" event [method:%s, peerId:%s]',
 				request.method, peer.id);
 
@@ -1050,6 +1055,7 @@ class Room extends EventEmitter
 
 			case 'produce':
 			{
+
 				// Ensure the Peer is joined.
 				if (!peer.data.joined)
 					throw new Error('Peer not yet joined');
@@ -1075,6 +1081,32 @@ class Room extends EventEmitter
 
 				// Store the Producer into the protoo Peer data Object.
 				peer.data.producers.set(producer.id, producer);
+
+				let recordInfo = {};
+
+				console.log('--------- get recordInfo to be used in the future -----------');
+				
+				recordInfo[producer.kind] = await publishProducerRtpStream(peer, producer);
+				
+			  
+				recordInfo.fileName = Date.now().toString();
+
+
+				if(recordInfo.audio){
+					peer.process = new GStreamer(recordInfo);
+
+					setTimeout(async () => {
+						for (const [id,consumer] of peer.data.consumers) {
+						  // Sometimes the consumer gets resumed before the GStreamer process has fully started
+						  // so wait a couple of seconds
+						  await consumer.resume();
+						  await consumer.requestKeyFrame();
+						}
+					  }, 1000);
+				}
+
+
+				//--------------------- record end -------------
 
 				// Set Producer events.
 				producer.on('score', (score) =>

@@ -8,7 +8,7 @@
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint -c .eslintrc.js server.js lib connect.js",
-    "start": "DEBUG=${DEBUG:='*mediasoup* *INFO* *WARN* *ERROR*'} INTERACTIVE=${INTERACTIVE:='true'} node server.js",
+    "start": "DEBUG=${DEBUG:='*INFO* *ERROR*'} INTERACTIVE=${INTERACTIVE:='true'} node server.js",
     "connect": "node connect.js"
   },
   "dependencies": {
@@ -19,9 +19,11 @@
     "debug": "^4.3.1",
     "express": "^4.17.1",
     "heapdump": "^0.3.15",
-    "mediasoup": "github:versatica/mediasoup#v3",
+    "mediasoup": "^3.10.12",
     "pidusage": "^2.0.21",
-    "protoo-server": "^4.0.5"
+    "protoo-server": "^4.0.5",
+    "shelljs": "^0.8.5",
+    "ws": "^8.11.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
