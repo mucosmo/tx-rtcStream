@@ -133,7 +133,7 @@ module.exports =
 					protocol    : 'tcp',
 					ip          : process.env.MEDIASOUP_LISTEN_IP || '0.0.0.0',
 					announcedIp : process.env.MEDIASOUP_ANNOUNCED_IP,
-					port        : 60105
+					port        : 60115
 				}
 			],
 		},
