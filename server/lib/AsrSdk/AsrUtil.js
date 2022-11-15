@@ -97,7 +97,7 @@ export default class AsrUtil {
         if(text){
             var param = {
                 text: text,
-                receivers:"parent"
+                receivers:config.receivers
             }
             var options = {
                 url: this.url + "/text/send",

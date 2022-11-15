@@ -1,5 +1,6 @@
 import { WebSocket } from 'ws';
 
+
 export default class SpeechRecognizer {
   constructor(params) {
     this.appid = params.appid || '';
