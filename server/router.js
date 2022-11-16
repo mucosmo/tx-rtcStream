@@ -266,7 +266,7 @@ async function createExpressApp() {
                         const peersInRoom = Object.keys(global.streamInfo[room])
                         peers.push(peersInRoom)
                     }
-                    const data = req.body.stream.file;
+                    const data = req.body.stream.mediasoup;
                     let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
                     let userIdNum = Number(data.user.slice(-1))
                     const roomId = rooms[roomIdNum - 1]
@@ -276,7 +276,7 @@ async function createExpressApp() {
                     data.user = `${data.user}(${global.streamInfo[roomId][peerId]["name"]})`;
 
                     const param = {
-                        model: "sync",
+                        model: "async",
                         callback: {
                             onComplete: ""
                         },
