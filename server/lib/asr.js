@@ -7,6 +7,7 @@ const GStreamer = require('./gstreamer/command')
 import('./AsrSdk/AsrUtil.js').then(async mod => {
     const AsrSDK = mod.default;
     asrUtil = new AsrSDK();
+    global.asrUtil = asrUtil;
 })
 
 module.exports.open = async () => {
@@ -16,13 +17,9 @@ module.exports.open = async () => {
 }
 
 module.exports.start = async (roomId, peerId) => {
-    console.log('--------- 先关闭 ASR ------------')
     await this.close();
-    console.log('--------- 打开 ASR ------------')
     await this.open();
-    console.log('--------- 开始识别 ------------')
-    console.log(`roomId: ${roomId}, peerId: ${peerId}`)
-
+    console.log(`识别如下用户的声音=> roomId: ${roomId}, peerId: ${peerId}`)
 
     const recordInfo = global.streamInfo[roomId][peerId]["audio"]
     const consumers = global.streamInfo[roomId][peerId]["consumers"]

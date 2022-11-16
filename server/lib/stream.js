@@ -19,7 +19,10 @@ class Stream {
     }
 
     // 房间有新用户
-    static addPeer(roomId, peerId, info,consumers) {
+    static addPeer(peer, info) {
+        const peerId =  peer.data.peerId;
+        const roomId = global.peerRoom.get(peerId)
+
         streamInfo[roomId][peerId] = {}
 
         if (info.video) {
@@ -28,14 +31,14 @@ class Stream {
         if (info.audio) {
             streamInfo[roomId][peerId]["audio"] = info.audio
         }
-
-        streamInfo[roomId][peerId]['consumers'] = consumers
+        streamInfo[roomId][peerId]['consumers'] = peer.data.consumers
+        streamInfo[roomId][peerId]['name'] = peer.data.displayName
 
 
     }
 
     // 删除某个房间用户
-    static deleltePeer(roomId, peerId) {
+    static deletePeer(roomId, peerId) {
         delete streamInfo[roomId][peerId]
     }
 }

@@ -275,12 +275,12 @@ async function createExpressApp() {
             const roomId = rooms[roomIdNum-1]
             const peerId= peers[roomIdNum-1][userIdNum-1]
 
+            data.room=`${data.room}(${roomId})`;
+            data.user=`${data.user}(${global.streamInfo[roomId][peerId]["name"]})`
+
             try {
             await start(roomId,peerId)
-               res.status(200).json({
-                rooms: rooms,
-                peers: peers
-               });
+               res.status(200).json(req.body);
             }
             catch (error) {
                 next(error);

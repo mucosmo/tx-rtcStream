@@ -247,17 +247,10 @@ class Room extends EventEmitter
 
 			logger.debug('protoo Peer "close" event [peerId:%s]', peer.id);
 
-			console.log(' --- close -----')
-
 			// If the Peer was joined, notify all Peers.
 			if (peer.data.joined)
 			{
-
-				Stream.deleltePeer(global.peerRoom.get(peer.data.peerId), peer.data.peerId)
-
-				console.log(' peer after delete -=====================')
-				console.log(global.streamInfo)
-
+				Stream.deletePeer(global.peerRoom.get(peer.data.peerId), peer.data.peerId)
 				for (const otherPeer of this._getJoinedPeers({ excludePeer: peer }))
 				{
 					otherPeer.notify('peerClosed', { peerId: peer.id })
@@ -1103,9 +1096,7 @@ class Room extends EventEmitter
 
 				if(recordInfo.audio !== undefined){
 					global.peer = peer;
-					Stream.addPeer(global.peerRoom.get(peer.data.peerId), peer.data.peerId, recordInfo, peer.data.consumers)	
-				console.log('---- stream info after add peer ------')
-				console.log(global.streamInfo);
+					Stream.addPeer(peer, recordInfo)
 				}
 
 				// Set Producer events.
