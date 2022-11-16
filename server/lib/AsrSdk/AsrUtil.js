@@ -1,5 +1,5 @@
 import axios from "axios";
-import baseConfig from "./config";
+import baseConfig from "./config.js";
 import SpeechRecognizer from "./sp/tencent/speechrecognizer.js";
 
 export default class AsrUtil {

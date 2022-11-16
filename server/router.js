@@ -275,8 +275,17 @@ async function createExpressApp() {
                     data.room = `${data.room}(${roomId})`;
                     data.user = `${data.user}(${global.streamInfo[roomId][peerId]["name"]})`;
 
-                    await startSync(roomId, peerId);
+                    const param = {
+                        model: "sync",
+                        callback: {
+                            onComplete: ""
+                        },
+                        config: req.body.config.config // 此处可能需要修改，不能暴露 token 
+                    }
+
+                    await startSync(roomId, peerId, param);
                 } else if (req.body.mode === 'async') {
+
                     const format = req.body.stream.file.format;
                     let file = req.body.stream.file.name;
                     file = `16k-${file.slice(-1)}.${format}`
@@ -284,11 +293,19 @@ async function createExpressApp() {
                     const data = req.body.stream.file;
                     data.name = file;
 
-                    await startAsync(file);
+                    const param = {
+                        model: "async",
+                        callback: {
+                            onComplete: ""
+                        },
+                        config: req.body.config.config
+                    }
+                    await startAsync(file, param);
                 }
                 res.status(200).json(req.body);
             }
             catch (error) {
+                console.log(error)
                 next(error);
             }
         });

@@ -13,15 +13,6 @@ const GSTREAMER_DEBUG_LEVEL = process.env.GSTREAMER_DEBUG_LEVEL || 3;
 const GSTREAMER_COMMAND = 'gst-launch-1.0';
 const GSTREAMER_OPTIONS = '-v -e';
 
-
-
-
-import('../AsrSdk/AsrUtil.js').then(async mod => {
-  const AsrSDK = mod.default;
-  asrUtil = new AsrSDK();
-  // await asrUtil.open("TX_5G_ASR_TEST_");
-})
-
 module.exports = class GStreamer {
   constructor(rtpParameters) {
     this._rtpParameters = rtpParameters;

@@ -1,24 +1,24 @@
 let asrUtil;
 let fs = require("fs");
+let AsrSDK;
 
 
 const GStreamer = require('./gstreamer/command')
 
 import('./AsrSdk/AsrUtil.js').then(async mod => {
-    const AsrSDK = mod.default;
-    asrUtil = new AsrSDK();
-    global.asrUtil = asrUtil;
+    AsrSDK = mod.default;
 })
 
-module.exports.open = async () => {
+module.exports.open = async (param) => {
+    asrUtil = new AsrSDK(param);
     await asrUtil.open("TX_5G_ASR_TEST_");
     global.asrUtil = asrUtil;
 
 }
 
-module.exports.startSync = async (roomId, peerId) => {
+module.exports.startSync = async (roomId, peerId, param) => {
     await this.close();
-    await this.open();
+    await this.open(param);
     console.log(`识别如下用户的声音 >>>>>>>>> roomId: ${roomId}, peerId: ${peerId}`)
 
     const recordInfo = global.streamInfo[roomId][peerId]["audio"]
@@ -42,9 +42,9 @@ module.exports.startSync = async (roomId, peerId) => {
  * @param {*} roomId 
  * @param {*} peerId 
  */
-module.exports.startAsync = async (file) => {
+module.exports.startAsync = async (file, param) => {
     await this.close();
-    await this.open();
+    await this.open(param);
     setTimeout(() => {
         console.log("开始识别音频文件 >>>>>>>>>:");
         var fileStream
@@ -61,8 +61,9 @@ module.exports.startAsync = async (file) => {
 }
 
 module.exports.close = async () => {
-    asrUtil.close()
-
-    global.asrUtil = asrUtil;
+    if (asrUtil) {
+        asrUtil.close()
+        global.asrUtil = asrUtil;
+    }
 }
 
