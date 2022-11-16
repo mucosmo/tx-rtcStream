@@ -6,8 +6,8 @@ process.env.DEBUG = process.env.DEBUG || '*INFO* *WARN* *ERROR*';
 const config = require('./config');
 
 /* eslint-disable no-console */
-console.log('process.env.DEBUG:', process.env.DEBUG);
-console.log('config.js:\n%s', JSON.stringify(config, null, '  '));
+// console.log('process.env.DEBUG:', process.env.DEBUG);
+// console.log('config.js:\n%s', JSON.stringify(config, null, '  '));
 /* eslint-enable no-console */
 
 const fs = require('fs');
@@ -29,6 +29,8 @@ const createExpressApp = require('./router')
 const WebSocket = require('ws');
 
 const logger = new Logger();
+
+const Stream = require('./lib/stream');
 
 // Async queue to manage rooms.
 // @type {AwaitQueue}
@@ -232,9 +234,19 @@ async function runProtooWebSocketServer() {
 			return;
 		}
 
+		// Stream.addPeer(roomId,peerId)
+
+ 
+
 		logger.info(
 			'protoo connection request [roomId:%s, peerId:%s, address:%s, origin:%s]',
 			roomId, peerId, info.socket.remoteAddress, info.origin);
+
+			global.peerRoom.set(peerId, roomId);
+
+	 
+
+ 
 
 		// Serialize this code into the queue to avoid that two peers connecting at
 		// the same time with the same roomId create two separate rooms with same
@@ -282,7 +294,18 @@ async function getOrCreateRoom({ roomId }) {
 		room = await Room.create({ mediasoupWorker, roomId });
 
 		rooms.set(roomId, room);
-		room.on('close', () => rooms.delete(roomId));
+
+		Stream.addRoom(roomId);
+		console.log('add room , stream info -----------')
+		console.log(global.streamInfo)
+
+		room.on('close', () => {
+			rooms.delete(roomId);
+			Stream.deleteRoom(roomId);
+			console.log('delete room , stream info -----------')
+			console.log(global.streamInfo)
+		});
+
 	}
 
 	return room;

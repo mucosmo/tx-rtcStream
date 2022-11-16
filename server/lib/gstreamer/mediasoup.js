@@ -38,8 +38,6 @@ module.exports.createRouter = async () => {
 };
 
 module.exports.createTransport = async (transportType, router, options) => {
-  console.log('createTransport() [type:%s. options:%o]', transportType, options);
-
   switch (transportType) {
     case 'webRtc':
       return await router.createWebRtcTransport(config.mediasoup.webRtcTransportOptions);

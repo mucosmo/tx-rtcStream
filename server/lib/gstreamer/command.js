@@ -19,7 +19,7 @@ let asrUtil;
 import('../AsrSdk/AsrUtil.js').then(async mod=>{
   const AsrSDK = mod.default;
   asrUtil = new AsrSDK();
-  await asrUtil.open("TX_5G_ASR_TEST_");
+  // await asrUtil.open("TX_5G_ASR_TEST_");
 })
 
 module.exports = class GStreamer {
@@ -65,9 +65,9 @@ module.exports = class GStreamer {
     );
 
     this._process.stdout.on('data', data => {
-      if (data.length === 640) {
-        asrUtil.write(data)
-      }
+      // if (data.length === 640) {
+      //   asrUtil.write(data)
+      // }
 
     }
     );
@@ -83,8 +83,6 @@ module.exports = class GStreamer {
 
   // Build the gstreamer child process args
   get _commandArgs() {
-    console.log('--------------- gstreamer command -------------------');
-
 
     let commandArgs = [
       `rtpbin name=rtpbin latency=50 buffer-mode=0 sdes="application/x-rtp-source-sdes"`,
@@ -95,7 +93,6 @@ module.exports = class GStreamer {
     commandArgs = commandArgs.concat(this._sinkArgs);
     // commandArgs = commandArgs.concat(this._rtcpArgs);
 
-    console.log(commandArgs);
     return commandArgs;
   }
 

@@ -10,6 +10,9 @@ const logger = new Logger('Room');
 const {publishProducerRtpStream} = require('./gstreamer/transport')
 const GStreamer = require('./gstreamer/command')
 
+const Stream = require('./stream');
+
+
 /**
  * Room class.
  *
@@ -211,6 +214,8 @@ class Room extends EventEmitter
 		peer.data.rtpCapabilities = undefined;
 		peer.data.sctpCapabilities = undefined;
 		peer.data.remotePorts = []
+
+		peer.data.peerId =peerId;
 
 		// Have mediasoup related maps ready even before the Peer joins since we
 		// allow creating Transports before joining.
@@ -1083,27 +1088,35 @@ class Room extends EventEmitter
 				peer.data.producers.set(producer.id, producer);
 
 				let recordInfo = {};
-
-				console.log('--------- get recordInfo to be used in the future -----------');
 				
 				recordInfo[producer.kind] = await publishProducerRtpStream(peer, producer);
 				
-			  
-				recordInfo.fileName = Date.now().toString();
+				recordInfo.fileName = Date.now().toString();		
+
+
+
 
 
 				if(recordInfo.audio){
-					peer.process = new GStreamer(recordInfo);
-
-					setTimeout(async () => {
-						for (const [id,consumer] of peer.data.consumers) {
-						  // Sometimes the consumer gets resumed before the GStreamer process has fully started
-						  // so wait a couple of seconds
-						  await consumer.resume();
-						  await consumer.requestKeyFrame();
-						}
-					  }, 1000);
+					Stream.addPeer(global.peerRoom.get(peer.data.peerId), peer.data.peerId, recordInfo, peer.data.consumers)
 				}
+
+				console.log('---- stream info after add peer ------')
+
+				console.log(global.streamInfo);
+
+				// if(recordInfo.audio){
+				// 	peer.process = new GStreamer(recordInfo);
+
+				// 	setTimeout(async () => {
+				// 		for (const [id,consumer] of peer.data.consumers) {
+				// 		  // Sometimes the consumer gets resumed before the GStreamer process has fully started
+				// 		  // so wait a couple of seconds
+				// 		  await consumer.resume();
+				// 		  await consumer.requestKeyFrame();
+				// 		}
+				// 	  }, 1000);
+				// }
 
 
 				//--------------------- record end -------------
