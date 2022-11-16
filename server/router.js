@@ -259,7 +259,7 @@ async function createExpressApp() {
         '/stream/push',
         async (req, res, next) => {
             try {
-                if (req.body.mode === 'sync') {
+                if (req.body.mode === 'sync') { //同步模式
                     const rooms = Object.keys(global.streamInfo)
                     const peers = []
                     for (let room of rooms) {
@@ -272,9 +272,6 @@ async function createExpressApp() {
                     const roomId = rooms[roomIdNum - 1]
                     const peerId = peers[roomIdNum - 1][userIdNum - 1]
 
-                    data.room = `${data.room}(${roomId})`;
-                    data.user = `${data.user}(${global.streamInfo[roomId][peerId]["name"]})`;
-
                     const param = {
                         model: "async",
                         callback: {
@@ -284,7 +281,9 @@ async function createExpressApp() {
                     }
 
                     await startSync(roomId, peerId, param);
-                } else if (req.body.mode === 'async') {
+                    res.status(200).json({ mode: "sync", room: roomId, user: global.streamInfo[roomId][peerId]["name"] });
+
+                } else if (req.body.mode === 'async') { //异步模式
 
                     const format = req.body.stream.file.format;
                     let file = req.body.stream.file.name;
@@ -301,8 +300,9 @@ async function createExpressApp() {
                         config: req.body.config.config
                     }
                     await startAsync(file, param);
+                    res.status(200).json({ mode: "async", format:format, file: file });
+
                 }
-                res.status(200).json(req.body);
             }
             catch (error) {
                 console.log(error)
