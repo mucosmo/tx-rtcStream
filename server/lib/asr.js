@@ -53,7 +53,7 @@ module.exports.startAsync = async (file) => {
         fileStream = fs.createReadStream(`../files/${file}`);
         fileStream.on('readable', () => {
             while (null !== (buffer = fileStream.read(bytesPerFrame))) {
-                // global.asrUtil.write(buffer);
+                global.asrUtil.write(buffer);
             }
         });
     }, 1000)
