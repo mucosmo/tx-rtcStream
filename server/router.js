@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const Logger = require('./lib/Logger');
 const logger = new Logger();
 
-const {start, close} = require('./lib/asr')
+const { startSync, startAsync } = require('./lib/asr')
 
 async function createExpressApp() {
     logger.info('creating Express app...');
@@ -251,36 +251,42 @@ async function createExpressApp() {
         });
 
 
-            /**
-     * POST API to create a mediasoup DataProducer associated to a Broadcaster.
-     * The exact Transport in which the DataProducer must be created is signaled in
-     */
+    /**
+* POST API to create a mediasoup DataProducer associated to a Broadcaster.
+* The exact Transport in which the DataProducer must be created is signaled in
+*/
     expressApp.post(
         '/stream/push',
         async (req, res, next) => {
-        
-         
-
-            const rooms = Object.keys(global.streamInfo)
-            const peers= []
-            for (let room of rooms){ 
-                const peersInRoom = Object.keys(global.streamInfo[room])
-                peers.push(peersInRoom)
-            }
-
-            const data = req.body.stream.file;
-            let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
-            let userIdNum = Number(data.user.slice(-1)) 
-
-            const roomId = rooms[roomIdNum-1]
-            const peerId= peers[roomIdNum-1][userIdNum-1]
-
-            data.room=`${data.room}(${roomId})`;
-            data.user=`${data.user}(${global.streamInfo[roomId][peerId]["name"]})`
-
             try {
-            await start(roomId,peerId)
-               res.status(200).json(req.body);
+                if (req.body.mode === 'sync') {
+                    const rooms = Object.keys(global.streamInfo)
+                    const peers = []
+                    for (let room of rooms) {
+                        const peersInRoom = Object.keys(global.streamInfo[room])
+                        peers.push(peersInRoom)
+                    }
+                    const data = req.body.stream.file;
+                    let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
+                    let userIdNum = Number(data.user.slice(-1))
+                    const roomId = rooms[roomIdNum - 1]
+                    const peerId = peers[roomIdNum - 1][userIdNum - 1]
+
+                    data.room = `${data.room}(${roomId})`;
+                    data.user = `${data.user}(${global.streamInfo[roomId][peerId]["name"]})`;
+
+                    await startSync(roomId, peerId);
+                } else if (req.body.mode === 'async') {
+                    const format = req.body.stream.file.format;
+                    let file = req.body.stream.file.name;
+                    file = `16k-${file.slice(-1)}.${format}`
+
+                    const data = req.body.stream.file;
+                    data.name = file;
+
+                    await startAsync(file);
+                }
+                res.status(200).json(req.body);
             }
             catch (error) {
                 next(error);
@@ -305,7 +311,7 @@ async function createExpressApp() {
             }
         });
 
-        return expressApp;
+    return expressApp;
 }
 
 module.exports = createExpressApp;
