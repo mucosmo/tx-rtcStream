@@ -4,8 +4,18 @@ let fs = require("fs");
 
 
 export default async function demo() {
+    var param ={
+        // 模式 : async || callback
+        model:"async",
+        //callback模式必填
+        callback: {
+            onComplete:""
+        },
+        //预留配置
+        config:{task:{}}
+    }
     //实例话对象
-    const asrUtil = new AsrUtil();
+    const asrUtil = new AsrUtil(param);
     //建立连接
     await asrUtil.open("TX_5G_ASR_TEST_");
     setTimeout(() => {

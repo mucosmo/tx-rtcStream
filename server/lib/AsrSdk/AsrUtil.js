@@ -1,13 +1,17 @@
 import axios from "axios";
-import config from "./config.js";
+import baseConfig from "./config";
 import SpeechRecognizer from "./sp/tencent/speechrecognizer.js";
 
 export default class AsrUtil {
-    constructor() {
-        this.url = config.url;
+    constructor(param) {
+        this.url = baseConfig.url;
         this.sessionId;
         this.asrUrl;
-
+        // model : async || callback
+        this.model=param.model||"async";
+        this.callback=param.callback;
+        this.config=param.config||{task:{}};
+        this.role ="sdk-role";
         this.speechRecognizer = null;
         this.isCanSendData = false;
         this.isCanStop = false;
@@ -18,11 +22,8 @@ export default class AsrUtil {
             this.sessionId = sessionId;
             var param = {
                 sessionId: sessionId,
-                //配置文件
-                config: {
-                    task:{}
-
-                }
+                //配置
+                config: this.config,
             }
             var options = {
                 url: this.url + "/asr/url/ws",
@@ -97,12 +98,15 @@ export default class AsrUtil {
         if(text){
             var param = {
                 text: text,
-                receivers:config.receivers
+                role: this.role,
+                model:this.model,
+                callback:this.callback,
+                receivers:baseConfig.receivers
             }
             var options = {
                 url: this.url + "/text/send",
                 method: 'POST',
-                headers: {token:config.token},
+                headers: {token:baseConfig.token},
                 data: param
             };
             var result = await axios(options);
