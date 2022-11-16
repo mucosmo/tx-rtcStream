@@ -296,14 +296,10 @@ async function getOrCreateRoom({ roomId }) {
 		rooms.set(roomId, room);
 
 		Stream.addRoom(roomId);
-		console.log('add room , stream info -----------')
-		console.log(global.streamInfo)
 
 		room.on('close', () => {
 			rooms.delete(roomId);
 			Stream.deleteRoom(roomId);
-			console.log('delete room , stream info -----------')
-			console.log(global.streamInfo)
 		});
 
 	}
