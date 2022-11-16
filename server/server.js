@@ -244,9 +244,6 @@ async function runProtooWebSocketServer() {
 
 			global.peerRoom.set(peerId, roomId);
 
-	 
-
- 
 
 		// Serialize this code into the queue to avoid that two peers connecting at
 		// the same time with the same roomId create two separate rooms with same

@@ -8,6 +8,8 @@ const bodyParser = require('body-parser');
 const Logger = require('./lib/Logger');
 const logger = new Logger();
 
+const {start, close} = require('./lib/asr')
+
 async function createExpressApp() {
     logger.info('creating Express app...');
 
@@ -256,10 +258,29 @@ async function createExpressApp() {
     expressApp.post(
         '/stream/push',
         async (req, res, next) => {
-            const { broadcasterId, transportId } = req.params;
-            const { label, protocol, sctpStreamParameters, appData } = req.body;
+        
+         
+
+            const rooms = Object.keys(global.streamInfo)
+            const peers= []
+            for (let room of rooms){ 
+                const peersInRoom = Object.keys(global.streamInfo[room])
+                peers.push(peersInRoom)
+            }
+
+            const data = req.body.stream.file;
+            let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
+            let userIdNum = Number(data.user.slice(-1)) 
+
+            const roomId = rooms[roomIdNum-1]
+            const peerId= peers[roomIdNum-1][userIdNum-1]
+
             try {
-               res.status(200).json(req.body);
+            await start(roomId,peerId)
+               res.status(200).json({
+                rooms: rooms,
+                peers: peers
+               });
             }
             catch (error) {
                 next(error);

@@ -8,7 +8,7 @@ const Bot = require('./Bot');
 const logger = new Logger('Room');
 
 const {publishProducerRtpStream} = require('./gstreamer/transport')
-const GStreamer = require('./gstreamer/command')
+
 
 const Stream = require('./stream');
 
@@ -1102,24 +1102,11 @@ class Room extends EventEmitter
 				recordInfo.fileName = Date.now().toString();		
 
 				if(recordInfo.audio !== undefined){
+					global.peer = peer;
 					Stream.addPeer(global.peerRoom.get(peer.data.peerId), peer.data.peerId, recordInfo, peer.data.consumers)	
 				console.log('---- stream info after add peer ------')
 				console.log(global.streamInfo);
 				}
-
-
-				// if(recordInfo.audio){
-				// 	peer.process = new GStreamer(recordInfo);
-
-				// 	setTimeout(async () => {
-				// 		for (const [id,consumer] of peer.data.consumers) {
-				// 		  // Sometimes the consumer gets resumed before the GStreamer process has fully started
-				// 		  // so wait a couple of seconds
-				// 		  await consumer.resume();
-				// 		  await consumer.requestKeyFrame();
-				// 		}
-				// 	  }, 1000);
-				// }
 
 				// Set Producer events.
 				producer.on('score', (score) =>

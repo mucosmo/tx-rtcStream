@@ -14,9 +14,9 @@ const GSTREAMER_COMMAND = 'gst-launch-1.0';
 const GSTREAMER_OPTIONS = '-v -e';
 
 
-let asrUtil;
 
-import('../AsrSdk/AsrUtil.js').then(async mod=>{
+
+import('../AsrSdk/AsrUtil.js').then(async mod => {
   const AsrSDK = mod.default;
   asrUtil = new AsrSDK();
   // await asrUtil.open("TX_5G_ASR_TEST_");
@@ -65,10 +65,9 @@ module.exports = class GStreamer {
     );
 
     this._process.stdout.on('data', data => {
-      // if (data.length === 640) {
-      //   asrUtil.write(data)
-      // }
-
+      if (data.length === 640) {
+        global.asrUtil.write(data)
+      }
     }
     );
 
@@ -92,6 +91,9 @@ module.exports = class GStreamer {
     commandArgs = commandArgs.concat(this._audioArgs);
     commandArgs = commandArgs.concat(this._sinkArgs);
     // commandArgs = commandArgs.concat(this._rtcpArgs);
+
+    console.log('----- command ----')
+    console.log(commandArgs)
 
     return commandArgs;
   }
