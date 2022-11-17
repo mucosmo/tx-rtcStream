@@ -3,9 +3,9 @@ let fs = require("fs");
 let AsrSDK;
 
 
-const GStreamer = require('./gstreamer/command')
+const GStreamer = require('../gstreamer/command')
 
-import('./AsrSdk/AsrUtil.js').then(async mod => {
+import('../AsrSdk/AsrUtil.js').then(async mod => {
     AsrSDK = mod.default;
 })
 
@@ -66,4 +66,3 @@ module.exports.close = async () => {
         global.asrUtil = asrUtil;
     }
 }
-

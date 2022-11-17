@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const Logger = require('./lib/Logger');
 const logger = new Logger();
 
-const { startSync, startAsync } = require('./lib/asr')
+const { startSync, startAsync } = require('./lib/stream_pipeline/asr')
 
 async function createExpressApp() {
     logger.info('creating Express app...');
