@@ -16,3 +16,6 @@ this._readyState = 'open'; // 原值为 status.readyState
 ### bug
 1. 第三方服务可能停止，需要做处理， 比如调用 ASR 服务（60102）
 2. 及时停止 asr 服务
+
+## notice
+1. m3u8, hls 格式进行推流服务提供给用户
