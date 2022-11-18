@@ -2,8 +2,6 @@
 
 SERVER_URL=https://hz-test.ikandy.cn:4443
 ROOM_ID=zdwiu3he
-MEDIA_FILE=http://devimages.apple.com/iphone/samples/bipbop/gear4/prog_index.m3u8
-
 
 set -e
 
@@ -117,10 +115,14 @@ ${HTTPIE_COMMAND} -v \
 echo ">>> running gstreamer..."
  
 
+MEDIA_FILE=rtmp://175.178.31.221:51013/live/m22340405047590913
+
+
 gst-launch-1.0 \
 	rtpbin name=rtpbin \
-	souphttpsrc location=${MEDIA_FILE} \
-	! hlsdemux \
+	rtmpsrc location=${MEDIA_FILE} \
+	! flvdemux  name=demux \
+	demux.video \
 	! queue \
 	! decodebin \
 	! videoconvert \
@@ -129,13 +131,13 @@ gst-launch-1.0 \
 	! rtpbin.send_rtp_sink_0 \
 	rtpbin.send_rtp_src_0 ! udpsink host=${videoTransportIp} port=${videoTransportPort} \
 	rtpbin.send_rtcp_src_0 ! udpsink host=${videoTransportIp} port=${videoTransportRtcpPort} sync=false async=false \
-	# demux.audio_0 \
-	# ! queue \
-	# ! decodebin \
-	# ! audioresample \
-	# ! audioconvert \
-	# ! opusenc \
-	# ! rtpopuspay pt=${AUDIO_PT} ssrc=${AUDIO_SSRC} \
-	# ! rtpbin.send_rtp_sink_1 \
-	# rtpbin.send_rtp_src_1 ! udpsink host=${audioTransportIp} port=${audioTransportPort} \
-    # rtpbin.send_rtcp_src_1 ! udpsink host=${audioTransportIp} port=${audioTransportRtcpPort} sync=false async=false
+	demux.audio \
+	! queue \
+	! decodebin \
+	! audioresample \
+	! audioconvert \
+	! opusenc \
+	! rtpopuspay pt=${AUDIO_PT} ssrc=${AUDIO_SSRC} \
+	! rtpbin.send_rtp_sink_1 \
+	rtpbin.send_rtp_src_1 ! udpsink host=${audioTransportIp} port=${audioTransportPort} \
+    rtpbin.send_rtcp_src_1 ! udpsink host=${audioTransportIp} port=${audioTransportRtcpPort} sync=false async=false
