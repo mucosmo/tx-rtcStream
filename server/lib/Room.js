@@ -1096,7 +1096,12 @@ class Room extends EventEmitter
 
 				if(recordInfo.audio !== undefined){
 					global.peer = peer;
-					Stream.addPeer(peer, recordInfo)
+					Stream.addPeer(peer, recordInfo, "audio")
+				}
+
+				if(recordInfo.video !== undefined){
+					global.peer = peer;
+					Stream.addPeer(peer, recordInfo, "video")
 				}
 
 				// Set Producer events.

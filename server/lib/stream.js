@@ -19,16 +19,16 @@ class Stream {
     }
 
     // 房间有新用户
-    static addPeer(peer, info) {
+    static addPeer(peer, info, type) {
         const peerId =  peer.data.peerId;
         const roomId = global.peerRoom.get(peerId)
 
-        streamInfo[roomId][peerId] = {}
+        streamInfo[roomId][peerId] = streamInfo[roomId][peerId] ?? {}
 
-        if (info.video) {
+        if (type === 'video') {
             streamInfo[roomId][peerId]["video"] = info.video
         }
-        if (info.audio) {
+        if (type === 'audio') {
             streamInfo[roomId][peerId]["audio"] = info.audio
         }
         streamInfo[roomId][peerId]['consumers'] = peer.data.consumers

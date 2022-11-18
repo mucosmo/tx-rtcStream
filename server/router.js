@@ -10,7 +10,8 @@ const logger = new Logger();
 
 const { execFile } = require('child_process');
 
-const { startSync, startAsync } = require('./lib/stream_pipeline/asr')
+const { startSync, startAsync } = require('./lib/stream_pipeline/asr');
+const { liveStreamUrl } = require('./lib/stream_pipeline/pull');
 
 async function createExpressApp() {
     logger.info('creating Express app...');
