@@ -12,6 +12,8 @@ this._readyState = 'open'; // 原值为 status.readyState
 1. 音视频流连接，推出去
 2. 音视频流接入房间
 3. 多个 session 测试 ASR 的并发能力
+4. 流合成
+5. ipass_oauth  ipass_config (json schema)
 
 ### bug
 1. 第三方服务可能停止，需要做处理， 比如调用 ASR 服务（60102）
@@ -19,3 +21,7 @@ this._readyState = 'open'; // 原值为 status.readyState
 
 ## notice
 1. m3u8, hls 格式进行推流服务提供给用户
+2. 当前由 gst 发起的进程没有及时 kill
+```shell
+ps -ef | grep gst-launch | awk '{ print $2 }' | xargs kill -9
+```
