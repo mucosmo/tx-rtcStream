@@ -40,6 +40,8 @@ const queue = new AwaitQueue();
 // @type {Map<Number, Room>}
 const rooms = new Map();
 
+global.rooms = rooms;
+
 // HTTPS server.
 // @type {https.Server}
 let httpsServer;
