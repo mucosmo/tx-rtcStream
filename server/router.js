@@ -8,6 +8,8 @@ const bodyParser = require('body-parser');
 const Logger = require('./lib/Logger');
 const logger = new Logger();
 
+const { execFile } = require('child_process');
+
 const { startSync, startAsync } = require('./lib/stream_pipeline/asr')
 
 async function createExpressApp() {
@@ -23,6 +25,8 @@ async function createExpressApp() {
      */
     expressApp.param(
         'roomId', (req, res, next, roomId) => {
+
+            console.log('roomid is ko ')
             // The room must exist for all API requests.
             if (!rooms.has(roomId)) {
                 const error = new Error(`room with id "${roomId}" not found`);
@@ -300,7 +304,7 @@ async function createExpressApp() {
                         config: req.body.config.config
                     }
                     await startAsync(file, param);
-                    res.status(200).json({ mode: "async", format:format, file: file });
+                    res.status(200).json({ mode: "async", format: format, file: file });
 
                 }
             }
@@ -309,6 +313,35 @@ async function createExpressApp() {
                 next(error);
             }
         });
+
+
+    expressApp.post(
+        '/stream/pull',
+        async (req, res, next) => {
+            try {
+                const rooms = Object.keys(global.streamInfo)
+                const data = req.body;
+                let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
+                const roomId = rooms[roomIdNum - 1]
+
+                // const pushShellPath = "/opt/www/tx-rtcStream/server/lib/stream_pipeline/push.sh";
+                // execFile(pushShellPath, [data.streamAddr], (error, stdout, stderror) => {
+                //     if (error) {
+                //         throw error;
+                //     }
+                //     console.log(stderror);
+                //     console.log(stdout);
+          
+                // });
+                
+                res.status(200).json({ room: `${data.room}(${roomId})`, streamAddr: data.streamAddr });
+            }
+            catch (error) {
+                console.log(error)
+                next(error);
+            }
+        });
+
 
     /**
      * Error handler.
