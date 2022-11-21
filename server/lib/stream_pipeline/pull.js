@@ -23,5 +23,5 @@ module.exports.liveStreamUrl =  (roomId, peerId) => {
         }
     }, 1000);
 
-    return `https://hz-test.ikandy.cn:60125/files/${recordInfo.fileName}.m3u8`
+    return `https://hz-test.ikandy.cn:60125/files/${recordInfo.fileName}/mediasoup_live.m3u8`
 }

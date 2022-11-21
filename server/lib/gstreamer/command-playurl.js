@@ -4,23 +4,23 @@ const child_process = require('child_process');
 const { EventEmitter } = require('events');
 const shell = require('shelljs');
 
-const { getCodecInfoFromRtpParameters } = require('./utils');
+const fs =require('fs')
 
-const RECORD_FILE_LOCATION_PATH = process.env.RECORD_FILE_LOCATION_PATH || '/opt/www/tx-rtcStream/files';
+const { getCodecInfoFromRtpParameters } = require('./utils');
 
 const GSTREAMER_DEBUG_LEVEL = process.env.GSTREAMER_DEBUG_LEVEL || 3;
 const GSTREAMER_COMMAND = 'gst-launch-1.0';
 const GSTREAMER_OPTIONS = '-v -e';
 
 module.exports = class GStreamer {
-  constructor (rtpParameters) {
+  constructor(rtpParameters) {
     this._rtpParameters = rtpParameters;
     this._process = undefined;
     this._observer = new EventEmitter();
     this._createProcess();
   }
 
-  _createProcess () {
+  _createProcess() {
     // Use the commented out exe to create gstreamer dot file
     // const exe = `GST_DEBUG=${GSTREAMER_DEBUG_LEVEL} GST_DEBUG_DUMP_DOT_DIR=./dump ${GSTREAMER_COMMAND} ${GSTREAMER_OPTIONS}`;
     const exe = `GST_DEBUG=${GSTREAMER_DEBUG_LEVEL} ${GSTREAMER_COMMAND} ${GSTREAMER_OPTIONS}`;
@@ -59,27 +59,29 @@ module.exports = class GStreamer {
     );
   }
 
-  kill () {
+  kill() {
     console.log('kill() [pid:%d]', this._process.pid);
     this._process.kill('SIGINT');
   }
 
   // Build the gstreamer child process args
-  get _commandArgs () {
+  get _commandArgs() {
     let commandArgs = [
       `rtpbin name=rtpbin latency=50 buffer-mode=0 sdes="application/x-rtp-source-sdes, cname=(string)${this._rtpParameters.video.rtpParameters.rtcp.cname}"`,
       '!'
     ];
 
     commandArgs = commandArgs.concat(this._videoArgs);
-    commandArgs = commandArgs.concat(this._audioArgs);
+    // commandArgs = commandArgs.concat(this._audioArgs);
     commandArgs = commandArgs.concat(this._sinkArgs);
     // commandArgs = commandArgs.concat(this._rtcpArgs);
+
+    console.log(commandArgs)
 
     return commandArgs;
   }
 
-  get _videoArgs () {
+  get _videoArgs() {
     const { video } = this._rtpParameters;
     // Get video codec info
     const videoCodecInfo = getCodecInfoFromRtpParameters('video', video.rtpParameters);
@@ -87,15 +89,8 @@ module.exports = class GStreamer {
     const VIDEO_CAPS = `application/x-rtp,media=(string)video,clock-rate=(int)${videoCodecInfo.clockRate},payload=(int)${videoCodecInfo.payloadType},encoding-name=(string)${videoCodecInfo.codecName.toUpperCase()},ssrc=(uint)${video.rtpParameters.encodings[0].ssrc}`;
 
     return [
-      `udpsrc port=${video.remoteRtpPort} caps="${VIDEO_CAPS}"`,
+      `videotestsrc is-live=true ! x264enc `,
       '!',
-      'rtpbin.recv_rtp_sink_0 rtpbin.',
-      '!',
-      'queue',
-      '!',
-      'rtpvp8depay',
-      '!',
-      'mux.'
     ];
   }
 
@@ -123,7 +118,7 @@ module.exports = class GStreamer {
     ];
   }
 
-  get _rtcpArgs () {
+  get _rtcpArgs() {
     const { video, audio } = this._rtpParameters;
 
     return [
@@ -140,11 +135,19 @@ module.exports = class GStreamer {
     ];
   }
 
-  get _sinkArgs () {
+  get _sinkArgs() {
+    const fileName = this._rtpParameters.fileName;
+    const RECORD_FILE_LOCATION_PATH = `/opt/www/tx-rtcStream/files/${fileName}`;
+
+    if(!fs.existsSync(RECORD_FILE_LOCATION_PATH)){
+      fs.mkdirSync(RECORD_FILE_LOCATION_PATH)
+    }
+
     return [
-      'webmmux name=mux',
+      'mpegtsmux',
       '!',
-      `filesink location=${RECORD_FILE_LOCATION_PATH}/${this._rtpParameters.fileName}.m3u8`
+      `hlssink max-files=20 playlist-length=0 location=${RECORD_FILE_LOCATION_PATH}/%05d.ts playlist-location=${RECORD_FILE_LOCATION_PATH}/mediasoup_live.m3u8 target-duration=5`
+
     ];
   }
 }
