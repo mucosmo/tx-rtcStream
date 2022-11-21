@@ -257,11 +257,10 @@ async function createExpressApp() {
 
 
     /**
-* POST API to create a mediasoup DataProducer associated to a Broadcaster.
-* The exact Transport in which the DataProducer must be created is signaled in
-*/
+    * 从房间拉取音频流并外送进行 ASR
+    */
     expressApp.post(
-        '/stream/push',
+        '/stream/pull',
         async (req, res, next) => {
             try {
                 if (req.body.mode === 'sync') { //同步模式
@@ -315,9 +314,11 @@ async function createExpressApp() {
             }
         });
 
-
+    /**
+     * 将外部流（数字人）推送到房间
+     */
     expressApp.post(
-        '/stream/pull',
+        '/stream/push',
         async (req, res, next) => {
             try {
                 const rooms = Object.keys(global.streamInfo)
@@ -332,9 +333,9 @@ async function createExpressApp() {
                 //     }
                 //     console.log(stderror);
                 //     console.log(stdout);
-          
+
                 // });
-                
+
                 res.status(200).json({ room: `${data.room}(${roomId})`, streamAddr: data.streamAddr });
             }
             catch (error) {

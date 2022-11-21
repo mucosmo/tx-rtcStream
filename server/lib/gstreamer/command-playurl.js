@@ -144,7 +144,7 @@ module.exports = class GStreamer {
     return [
       'webmmux name=mux',
       '!',
-      `filesink location=${RECORD_FILE_LOCATION_PATH}/12345.webm`
+      `filesink location=${RECORD_FILE_LOCATION_PATH}/${video.fileName}.m3u8`
     ];
   }
 }
