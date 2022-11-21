@@ -67,7 +67,7 @@ module.exports = class GStreamer {
   // Build the gstreamer child process args
   get _commandArgs() {
     let commandArgs = [
-      `rtpbin name=rtpbin latency=50 buffer-mode=0 sdes="application/x-rtp-source-sdes, cname=(string)${this._rtpParameters.video.rtpParameters.rtcp.cname}"`,
+      `rtpbin name=rtpbin latency=50 buffer-mode=0 drop-on-latency=true sdes="application/x-rtp-source-sdes, cname=(string)${this._rtpParameters.video.rtpParameters.rtcp.cname}"`,
       '!'
     ];
 
@@ -89,8 +89,15 @@ module.exports = class GStreamer {
     const VIDEO_CAPS = `application/x-rtp,media=(string)video,clock-rate=(int)${videoCodecInfo.clockRate},payload=(int)${videoCodecInfo.payloadType},encoding-name=(string)${videoCodecInfo.codecName.toUpperCase()},ssrc=(uint)${video.rtpParameters.encodings[0].ssrc}`;
 
     return [
-      `videotestsrc is-live=true ! x264enc `,
-      '!',
+      `udpsrc port=${video.remoteRtpPort} caps="${VIDEO_CAPS}"`, // remoteport 需正确
+      '! rtpbin.recv_rtp_sink_0 rtpbin.',
+      '! queue',
+      '! rtpvp8depay',
+      '! decodebin',
+      // '! videoconvert', // 不需要进行转码，否则浪费性能
+      // '! video/x-raw, format=I420',
+      '! x264enc',
+      // '! mux.'
     ];
   }
 
@@ -111,10 +118,12 @@ module.exports = class GStreamer {
       'rtpopusdepay',
       '!',
       'opusdec',
-      '!',
-      'opusenc',
-      '!',
-      'mux.'
+
+      '! x264enc'
+      // '!',
+      // 'opusenc',
+      // '!',
+      // 'mux.'
     ];
   }
 
@@ -144,9 +153,8 @@ module.exports = class GStreamer {
     }
 
     return [
-      'mpegtsmux',
-      '!',
-      `hlssink max-files=20 playlist-length=0 location=${RECORD_FILE_LOCATION_PATH}/%05d.ts playlist-location=${RECORD_FILE_LOCATION_PATH}/mediasoup_live.m3u8 target-duration=5`
+      '! mpegtsmux',
+      `! hlssink max-files=50 playlist-length=0 location=${RECORD_FILE_LOCATION_PATH}/%05d.ts playlist-location=${RECORD_FILE_LOCATION_PATH}/mediasoup_live.m3u8 target-duration=2`
 
     ];
   }
