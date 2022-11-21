@@ -8,12 +8,11 @@ const GStreamer = require('../gstreamer/command-playurl')
  *  把房间的音视频流转化成直播地址
  */
 module.exports.liveStreamUrl =  (roomId, peerId) => {
-    console.log(`--- start live stream ----- roomId: ${roomId}, peerId: ${peerId}`)
-
     const recordInfo = global.streamInfo[roomId][peerId]
     const consumers = global.streamInfo[roomId][peerId]["consumers"]
 
-    global.peer.process = new GStreamer(recordInfo );
+    global.peer.process = new GStreamer(recordInfo);
+
 
     setTimeout(async () => {
         for (const [id, consumer] of consumers) {
@@ -23,4 +22,6 @@ module.exports.liveStreamUrl =  (roomId, peerId) => {
             await consumer.requestKeyFrame();
         }
     }, 1000);
+
+    return `https://hz-test.ikandy.cn:60125/files/${recordInfo.fileName}.m3u8`
 }

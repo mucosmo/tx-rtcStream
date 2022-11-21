@@ -1092,7 +1092,7 @@ class Room extends EventEmitter
 				
 				recordInfo[producer.kind] = await publishProducerRtpStream(peer, producer);
 				
-				recordInfo.fileName = Date.now().toString();		
+				recordInfo.fileName = Date.now() + Math.random().toString(36).slice(2);		
 
 				if(recordInfo.audio !== undefined){
 					global.peer = peer;

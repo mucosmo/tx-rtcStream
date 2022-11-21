@@ -27,14 +27,13 @@ class Stream {
 
         if (type === 'video') {
             streamInfo[roomId][peerId]["video"] = info.video
+            streamInfo[roomId][peerId]["fileName"] = info.fileName
         }
         if (type === 'audio') {
             streamInfo[roomId][peerId]["audio"] = info.audio
         }
         streamInfo[roomId][peerId]['consumers'] = peer.data.consumers
         streamInfo[roomId][peerId]['name'] = peer.data.displayName
-
-
     }
 
     // 删除某个房间用户

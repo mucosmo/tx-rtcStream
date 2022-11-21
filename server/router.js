@@ -315,6 +315,35 @@ async function createExpressApp() {
         });
 
     /**
+    * 从房间会话中生成直播流地址
+    */
+    expressApp.post(
+        '/stream/pull/live',
+        async (req, res, next) => {
+            try {
+                const rooms = Object.keys(global.streamInfo)
+                const peers = []
+                for (let room of rooms) {
+                    const peersInRoom = Object.keys(global.streamInfo[room])
+                    peers.push(peersInRoom)
+                }
+                const data = req.body;
+                let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
+                let userIdNum = Number(data.user.slice(-1))
+                const roomId = rooms[roomIdNum - 1]
+                const peerId = peers[roomIdNum - 1][userIdNum - 1]
+
+                console.log('-as-d-as-da-sd-as-d-')
+                const liveUrl = liveStreamUrl(roomId, peerId);
+                res.status(200).json({ mode: "sync", room: roomId, user: global.streamInfo[roomId][peerId]["name"], liveUrl });
+            }
+            catch (error) {
+                console.log(error)
+                next(error);
+            }
+        });
+
+    /**
      * 将外部流（数字人）推送到房间
      */
     expressApp.post(

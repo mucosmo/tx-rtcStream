@@ -74,7 +74,7 @@ module.exports = class GStreamer {
     commandArgs = commandArgs.concat(this._videoArgs);
     commandArgs = commandArgs.concat(this._audioArgs);
     commandArgs = commandArgs.concat(this._sinkArgs);
-    commandArgs = commandArgs.concat(this._rtcpArgs);
+    // commandArgs = commandArgs.concat(this._rtcpArgs);
 
     return commandArgs;
   }
@@ -144,7 +144,7 @@ module.exports = class GStreamer {
     return [
       'webmmux name=mux',
       '!',
-      `filesink location=${RECORD_FILE_LOCATION_PATH}/${video.fileName}.m3u8`
+      `filesink location=${RECORD_FILE_LOCATION_PATH}/${this._rtpParameters.fileName}.m3u8`
     ];
   }
 }
