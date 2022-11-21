@@ -54,8 +54,9 @@ module.exports = class GStreamer {
       console.log('gstreamer::process::stderr::data [data:%o]', data)
     );
 
-    this._process.stdout.on('data', data =>
-      console.log('gstreamer::process::stdout::data [data:%o]', data.length)
+    this._process.stdout.on('data', data =>{
+      // console.log('gstreamer::process::stdout::data [data:%o]', data.length)
+    }
     );
   }
 
@@ -67,12 +68,11 @@ module.exports = class GStreamer {
   // Build the gstreamer child process args
   get _commandArgs() {
     let commandArgs = [
-      `rtpbin name=rtpbin latency=50 buffer-mode=0 drop-on-latency=true sdes="application/x-rtp-source-sdes, cname=(string)${this._rtpParameters.video.rtpParameters.rtcp.cname}"`,
-      '!'
+      `rtpbin name=rtpbin latency=50 buffer-mode=0 sdes="application/x-rtp-source-sdes, cname=(string)${this._rtpParameters.video.rtpParameters.rtcp.cname}"`
     ];
 
     commandArgs = commandArgs.concat(this._videoArgs);
-    // commandArgs = commandArgs.concat(this._audioArgs);
+    commandArgs = commandArgs.concat(this._audioArgs);
     commandArgs = commandArgs.concat(this._sinkArgs);
     // commandArgs = commandArgs.concat(this._rtcpArgs);
 
@@ -89,7 +89,7 @@ module.exports = class GStreamer {
     const VIDEO_CAPS = `application/x-rtp,media=(string)video,clock-rate=(int)${videoCodecInfo.clockRate},payload=(int)${videoCodecInfo.payloadType},encoding-name=(string)${videoCodecInfo.codecName.toUpperCase()},ssrc=(uint)${video.rtpParameters.encodings[0].ssrc}`;
 
     return [
-      `udpsrc port=${video.remoteRtpPort} caps="${VIDEO_CAPS}"`, // remoteport 需正确
+      `! udpsrc port=${video.remoteRtpPort} caps="${VIDEO_CAPS}"`, // remoteport 需正确
       '! rtpbin.recv_rtp_sink_0 rtpbin.',
       '! queue',
       '! rtpvp8depay',
@@ -97,7 +97,7 @@ module.exports = class GStreamer {
       // '! videoconvert', // 不需要进行转码，否则浪费性能
       // '! video/x-raw, format=I420',
       '! x264enc',
-      // '! mux.'
+      '! mux.'
     ];
   }
 
@@ -110,20 +110,13 @@ module.exports = class GStreamer {
 
     return [
       `udpsrc port=${audio.remoteRtpPort} caps="${AUDIO_CAPS}"`,
-      '!',
-      'rtpbin.recv_rtp_sink_1 rtpbin.',
-      '!',
-      'queue',
-      '!',
-      'rtpopusdepay',
-      '!',
-      'opusdec',
-
-      '! x264enc'
-      // '!',
-      // 'opusenc',
-      // '!',
-      // 'mux.'
+      '! rtpbin.recv_rtp_sink_1 rtpbin.',
+      '! queue',
+      '! rtpopusdepay',
+      '! opusdec',
+      '! audioconvert',
+      '! voaacenc',
+      '! mux.'
     ];
   }
 
@@ -153,7 +146,7 @@ module.exports = class GStreamer {
     }
 
     return [
-      '! mpegtsmux',
+      'mpegtsmux name=mux',
       `! hlssink max-files=50 playlist-length=0 location=${RECORD_FILE_LOCATION_PATH}/%05d.ts playlist-location=${RECORD_FILE_LOCATION_PATH}/mediasoup_live.m3u8 target-duration=2`
 
     ];
