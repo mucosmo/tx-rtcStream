@@ -337,9 +337,6 @@ async function createExpressApp() {
 
                 const liveUrl = liveStreamUrl(roomId, peerId);
 
-                console.log(liveUrl.split('/').slice(-1))
-
-           
                 res.status(200).json({ mode: "sync", room: roomId, user: global.streamInfo[roomId][peerId]["name"], liveUrl });
             }
             catch (error) {
@@ -360,8 +357,6 @@ async function createExpressApp() {
                 let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
                 const roomId = rooms[roomIdNum - 1]
 
-                console.log(data.streamAddr)
-                
                  await dh.start(roomId, data.streamAddr)
 
                 res.status(200).json({ room: `${data.room}(${roomId})`, streamAddr: data.streamAddr });
