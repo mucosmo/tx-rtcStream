@@ -94,6 +94,7 @@ module.exports = class GStreamer {
       '! queue',
       '! rtpvp8depay',
       '! decodebin',
+      '! videoflip method=4',
       // '! videoconvert', // 不需要进行转码，否则浪费性能
       // '! video/x-raw, format=I420',
       '! x264enc',
