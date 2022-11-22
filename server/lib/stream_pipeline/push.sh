@@ -2,15 +2,19 @@
 
 SERVER_URL=https://hz-test.ikandy.cn:4443
 ROOM_ID=zdwiu3he
+MEDIA_FILE=$1
+
 
 set -e
 
-BROADCASTER_ID=$(LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | fold -w ${1:-32} | head -n 1)
+BROADCASTER_ID=$(LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | fold -w ${5:-32} | head -n 1)
 HTTPIE_COMMAND="http --check-status"
 AUDIO_SSRC=1111
 AUDIO_PT=100
 VIDEO_SSRC=2222
 VIDEO_PT=101
+
+echo $BROADCASTER_ID
 
 #
 # Verify that a room with id ROOM_ID does exist by sending a simlpe HTTP GET. If
@@ -114,9 +118,6 @@ ${HTTPIE_COMMAND} -v \
 #
 echo ">>> running gstreamer..."
  
-
-MEDIA_FILE=rtmp://175.178.31.221:51013/live/m22340405047590913
-
 
 gst-launch-1.0 \
 	rtpbin name=rtpbin \

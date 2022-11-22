@@ -148,7 +148,7 @@ module.exports = class GStreamer {
 
     return [
       'mpegtsmux name=mux',
-      `! hlssink max-files=5 playlist-length=0 location=${RECORD_FILE_LOCATION_PATH}/%05d.ts playlist-location=${RECORD_FILE_LOCATION_PATH}/mediasoup_live.m3u8 target-duration=5`
+      `! hlssink max-files=5 playlist-length=0 location=${RECORD_FILE_LOCATION_PATH}/%05d.ts playlist-location=${RECORD_FILE_LOCATION_PATH}/mediasoup_live.m3u8 target-duration=2`
 
     ];
   }

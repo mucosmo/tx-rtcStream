@@ -8,10 +8,13 @@ const bodyParser = require('body-parser');
 const Logger = require('./lib/Logger');
 const logger = new Logger();
 
-const { execFile } = require('child_process');
+const cp = require('child_process');
 
 const { startSync, startAsync } = require('./lib/stream_pipeline/asr');
 const { liveStreamUrl } = require('./lib/stream_pipeline/pull');
+
+const dh = require('./lib/stream_pipeline/push');
+const fs = require('fs');
 
 async function createExpressApp() {
     logger.info('creating Express app...');
@@ -27,7 +30,6 @@ async function createExpressApp() {
     expressApp.param(
         'roomId', (req, res, next, roomId) => {
 
-            console.log('roomid is ko ')
             // The room must exist for all API requests.
             if (!rooms.has(roomId)) {
                 const error = new Error(`room with id "${roomId}" not found`);
@@ -333,8 +335,11 @@ async function createExpressApp() {
                 const roomId = rooms[roomIdNum - 1]
                 const peerId = peers[roomIdNum - 1][userIdNum - 1]
 
-                console.log('-as-d-as-da-sd-as-d-')
                 const liveUrl = liveStreamUrl(roomId, peerId);
+
+                console.log(liveUrl.split('/').slice(-1))
+
+           
                 res.status(200).json({ mode: "sync", room: roomId, user: global.streamInfo[roomId][peerId]["name"], liveUrl });
             }
             catch (error) {
@@ -355,15 +360,9 @@ async function createExpressApp() {
                 let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
                 const roomId = rooms[roomIdNum - 1]
 
-                // const pushShellPath = "/opt/www/tx-rtcStream/server/lib/stream_pipeline/push.sh";
-                // execFile(pushShellPath, [data.streamAddr], (error, stdout, stderror) => {
-                //     if (error) {
-                //         throw error;
-                //     }
-                //     console.log(stderror);
-                //     console.log(stdout);
-
-                // });
+                console.log(data.streamAddr)
+                
+                 await dh.start(roomId, data.streamAddr)
 
                 res.status(200).json({ room: `${data.room}(${roomId})`, streamAddr: data.streamAddr });
             }
@@ -372,6 +371,26 @@ async function createExpressApp() {
                 next(error);
             }
         });
+
+
+            /**
+     * 将外部流（数字人）推送到房间
+     */
+    expressApp.post(
+        '/stream/push/stop',
+        async (req, res, next) => {
+            try {  
+                const roomId = req.body.roomId    
+                 await dh.stop(roomId)
+
+                res.status(200).json({ room: `(${roomId})` });
+            }
+            catch (error) {
+                console.log(error)
+                next(error);
+            }
+        });
+
 
 
     /**
