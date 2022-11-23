@@ -149,9 +149,8 @@ async function start(roomId, streamAddr) {
 }
 
 // 停止推送数字人
-async function stop(sessionId) {
- 
-    kill(sessionId);
+ function stop(sessionId) {
+    return kill(sessionId);
 }
 
 module.exports = {

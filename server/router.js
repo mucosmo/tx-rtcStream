@@ -354,9 +354,9 @@ async function createExpressApp() {
             try {
 
                 const sessionId = req.body.sessionId;
-                liveStreamStop(sessionId);
+                const result = liveStreamStop(sessionId);
 
-                res.status(200).json({ sessionId });
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error)
@@ -376,7 +376,8 @@ async function createExpressApp() {
                 let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
                 const roomId = rooms[roomIdNum - 1]
 
-                const sessionId = await dh.start(roomId, data.streamAddr)
+                const sessionId = await dh.start(roomId, data.streamAddr);
+                console.log(sessionId);
 
                 res.status(200).json({ room: `${data.room}(${roomId})`, streamAddr: data.streamAddr, sessionId });
             }
@@ -394,11 +395,9 @@ async function createExpressApp() {
         '/stream/push/stop',
         async (req, res, next) => {
             try {
-
                 const sessionId= req.body.sessionId;
-                dh.stop(sessionId)
-
-                res.status(200).json({ sessionId });
+                const result = dh.stop(sessionId);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error)

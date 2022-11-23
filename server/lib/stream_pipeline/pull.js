@@ -36,5 +36,5 @@ module.exports.liveStreamUrl = (roomId, peerId) => {
  *  把房间的音视频流转化成直播地址
  */
 module.exports.liveStreamStop = (sessionId) => {
-    kill(sessionId)
+    return kill(sessionId)
 }
