@@ -4,6 +4,11 @@ global.processObj = {}
 
 const kill = require('tree-kill');
 
-module.exports =  function (sessionId) {
-    kill(global.processObj[sessionId])
+module.exports = function (sessionId) {
+
+    const pid = global.processObj[sessionId]
+    if (pid) {
+        kill(pid);
+    }
+
 }
