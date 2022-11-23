@@ -11,7 +11,7 @@ const logger = new Logger();
 const cp = require('child_process');
 
 const { startSync, startAsync } = require('./lib/stream_pipeline/asr');
-const { liveStreamUrl } = require('./lib/stream_pipeline/pull');
+const { liveStreamUrl, liveStreamStop } = require('./lib/stream_pipeline/pull');
 
 const dh = require('./lib/stream_pipeline/push');
 const fs = require('fs');
@@ -337,7 +337,36 @@ async function createExpressApp() {
 
                 const liveUrl = liveStreamUrl(roomId, peerId);
 
-                res.status(200).json({ mode: "sync", room: roomId, user: global.streamInfo[roomId][peerId]["name"], liveUrl });
+                res.status(200).json({ room: roomId, user: global.streamInfo[roomId][peerId]["name"], liveUrl });
+            }
+            catch (error) {
+                console.log(error)
+                next(error);
+            }
+        });
+
+    /**
+* 从房间会话中生成直播流地址
+*/
+    expressApp.post(
+        '/stream/pull/live/stop',
+        async (req, res, next) => {
+            try {
+                const rooms = Object.keys(global.streamInfo)
+                const peers = []
+                for (let room of rooms) {
+                    const peersInRoom = Object.keys(global.streamInfo[room])
+                    peers.push(peersInRoom)
+                }
+                const data = req.body;
+                let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
+                let userIdNum = Number(data.user.slice(-1))
+                const roomId = rooms[roomIdNum - 1]
+                const peerId = peers[roomIdNum - 1][userIdNum - 1]
+
+                const liveUrl = liveStreamStop(roomId, peerId);
+
+                res.status(200).json({ room: roomId, user: global.streamInfo[roomId][peerId]["name"] });
             }
             catch (error) {
                 console.log(error)
@@ -357,7 +386,7 @@ async function createExpressApp() {
                 let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
                 const roomId = rooms[roomIdNum - 1]
 
-                 await dh.start(roomId, data.streamAddr)
+                await dh.start(roomId, data.streamAddr)
 
                 res.status(200).json({ room: `${data.room}(${roomId})`, streamAddr: data.streamAddr });
             }
@@ -368,15 +397,15 @@ async function createExpressApp() {
         });
 
 
-            /**
-     * 将外部流（数字人）推送到房间
-     */
+    /**
+* 停止推送外部流
+*/
     expressApp.post(
         '/stream/push/stop',
         async (req, res, next) => {
-            try {  
-                const roomId = req.body.roomId    
-                 await dh.stop(roomId)
+            try {
+                const roomId = req.body.roomId
+                await dh.stop(roomId)
 
                 res.status(200).json({ room: `(${roomId})` });
             }

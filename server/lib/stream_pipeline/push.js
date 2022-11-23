@@ -1,6 +1,8 @@
 const axios = require('axios');
 
-const cp = require('child_process')
+const cp = require('child_process');
+
+const kill = require('tree-kill');
 
 const request = axios.create({
     baseURL: 'https://hz-test.ikandy.cn:4443/',
@@ -133,19 +135,17 @@ async function start(roomId, streamAddr) {
         `rtpbin.send_rtcp_src_1 ! udpsink host=${audioTransport.ip} port=${audioTransport.rtcpPort} sync=false async=false`
     ].join(' ');
 
-    dhcp[roomId] = cp.exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.error(error)
-        }
-    })
-
+    dhcp[roomId] = cp.spawn(command,  {
+        detached: false,
+        shell: true
+      })
 
 }
 
 // 停止推送数字人
 async function stop(roomId) {
-    dhcp[roomId].kill()
-    console.log('--- stop dh ')
+    console.log(`pid: ${dhcp[roomId].pid}`)
+    kill(dhcp[roomId].pid);
 }
 
 module.exports = {
