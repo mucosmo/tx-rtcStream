@@ -6,7 +6,7 @@ const GStreamer = require('../gstreamer/command-playurl')
 
 const fs = require('fs')
 
-const kill = require('tree-kill');
+const kill = require('../../lib/child_process')
 
 /**
  *  把房间的音视频流转化成直播地址
@@ -27,17 +27,14 @@ module.exports.liveStreamUrl = (roomId, peerId) => {
     }
 
     const filePath = `${recordInfo.fileName}/mediasoup_live.m3u8`
-
-    return `http://hz-test.ikandy.cn:60125/files/${filePath}`
+    const sessionId = `tx_live_${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+    global.processObj[sessionId] = global.peer.process._process.pid;
+    return { sessionId, liveUrl: `http://hz-test.ikandy.cn:60125/files/${filePath}` }
 }
 
 /**
  *  把房间的音视频流转化成直播地址
  */
- module.exports.liveStreamStop = (roomId, peerId) => {
-    if(global.peer.process){
-    
-        console.log(`pid: ${global.peer.process._process.pid}`)
-        kill(global.peer.process._process.pid)
-    }
+module.exports.liveStreamStop = (sessionId) => {
+    kill(sessionId)
 }

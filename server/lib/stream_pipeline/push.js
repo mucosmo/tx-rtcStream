@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const cp = require('child_process');
 
-const kill = require('tree-kill');
+const kill = require('../../lib/child_process')
 
 const request = axios.create({
     baseURL: 'https://hz-test.ikandy.cn:4443/',
@@ -140,12 +140,18 @@ async function start(roomId, streamAddr) {
         shell: true
       })
 
+      const sessionId = `tx_push_${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+
+      global.processObj[sessionId] = dhcp[roomId].pid;
+
+      return sessionId;
+
 }
 
 // 停止推送数字人
-async function stop(roomId) {
-    console.log(`pid: ${dhcp[roomId].pid}`)
-    kill(dhcp[roomId].pid);
+async function stop(sessionId) {
+ 
+    kill(sessionId);
 }
 
 module.exports = {
