@@ -246,7 +246,7 @@ gulp.task('live', gulp.series(
 	'browser:base',
 	(done) =>
 	{
-		const config = require('../server/config');
+		const config = require('./config');
 
 		browserSync(
 			{
