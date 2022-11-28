@@ -2,7 +2,9 @@
  * 该文件用户拉流（从会话房间拉流，然后推送给外部（ASR 语音识别，playUrl 直播地址）
  */
 
-const GStreamer = require('../gstreamer/command-playurl')
+const GStreamerLive = require('../gstreamer/command-playurl')
+
+const GStreamerComposite = require('../gstreamer/stream-composite')
 
 const fs = require('fs')
 
@@ -15,7 +17,7 @@ module.exports.liveStreamUrl = (roomId, peerId) => {
     const recordInfo = global.streamInfo[roomId][peerId]
     if (!fs.existsSync(`/opt/www/tx-rtcStream/files/${recordInfo.fileName}`)) {
         const consumers = global.streamInfo[roomId][peerId]["consumers"]
-        global.peer.process = new GStreamer(recordInfo);
+        global.peer.process = new GStreamerLive(recordInfo);
         setTimeout(async () => {
             for (const [id, consumer] of consumers) {
                 // Sometimes the consumer gets resumed before the GStreamer process has fully started
@@ -30,6 +32,28 @@ module.exports.liveStreamUrl = (roomId, peerId) => {
     const sessionId = `tx_live_${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
     global.processObj[sessionId] = global.peer.process._process.pid;
     return { sessionId, liveUrl: `http://hz-test.ikandy.cn:60125/files/${filePath}` }
+}
+
+
+/**
+ *  拉取房间流并进行合成
+ */
+module.exports.streamComposite = (roomId, peerId) => {
+    const recordInfo = global.streamInfo[roomId][peerId]
+
+    const consumers = global.streamInfo[roomId][peerId]["consumers"]
+    global.peer.process = new GStreamerComposite(recordInfo);
+    setTimeout(async () => {
+        for (const [id, consumer] of consumers) {
+            // Sometimes the consumer gets resumed before the GStreamer process has fully started
+            // so wait a couple of seconds
+            await consumer.resume();
+            await consumer.requestKeyFrame();
+        }
+    }, 1000);
+    const sessionId = `tx_composite_${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+    global.processObj[sessionId] = global.peer.process._process.pid;
+    return { sessionId }
 }
 
 /**

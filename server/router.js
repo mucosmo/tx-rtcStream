@@ -11,7 +11,7 @@ const logger = new Logger();
 const cp = require('child_process');
 
 const { startSync, startAsync } = require('./lib/stream_pipeline/asr');
-const { liveStreamUrl, liveStreamStop } = require('./lib/stream_pipeline/pull');
+const { liveStreamUrl, liveStreamStop, streamComposite } = require('./lib/stream_pipeline/pull');
 
 const dh = require('./lib/stream_pipeline/push');
 const fs = require('fs');
@@ -262,7 +262,7 @@ async function createExpressApp() {
     * 从房间拉取音频流并外送进行 ASR
     */
     expressApp.post(
-        '/stream/pull',
+        '/stream/pull/dm',
         async (req, res, next) => {
             try {
                 if (req.body.mode === 'sync') { //同步模式
@@ -365,8 +365,40 @@ async function createExpressApp() {
         });
 
     /**
-     * 将外部流（数字人）推送到房间
+     * 从房间拉流并进行相应操作（dm/rec/live/mux/transcript)
      */
+    expressApp.post(
+        '/stream/pull',
+        async (req, res, next) => {
+            try {
+                const rooms = Object.keys(global.streamInfo)
+                const peers = []
+                for (let room of rooms) {
+                    const peersInRoom = Object.keys(global.streamInfo[room])
+                    peers.push(peersInRoom)
+                }
+                const data = {
+                    room: "room1",
+                    user: "user1"
+                };
+                let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
+                let userIdNum = Number(data.user.slice(-1))
+                const roomId = rooms[roomIdNum - 1]
+                const peerId = peers[roomIdNum - 1][userIdNum - 1]
+                const { sessionId } = streamComposite(roomId, peerId);
+
+                res.status(200).json({ sessionId });
+            }
+            catch (error) {
+                console.log(error)
+                next(error);
+            }
+        });
+
+
+    /**
+* 将外部流（数字人）推送到房间
+*/
     expressApp.post(
         '/stream/push',
         async (req, res, next) => {
@@ -388,14 +420,15 @@ async function createExpressApp() {
         });
 
 
+
     /**
-* 停止推送外部流
+* 停止会话进程
 */
     expressApp.post(
-        '/stream/push/stop',
+        '/stream/session/stop',
         async (req, res, next) => {
             try {
-                const sessionId= req.body.sessionId;
+                const sessionId = req.body.sessionId;
                 const result = dh.stop(sessionId);
                 res.status(200).json(result);
             }
