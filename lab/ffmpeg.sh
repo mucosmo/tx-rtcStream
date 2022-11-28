@@ -49,7 +49,8 @@ m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live
 
 
 # 从 gstreamer 输出到 ffmpeg
-gst-launch-1.0 -v -q  videotestsrc pattern=snow ! video/x-raw,width=1280,height=720  ! matroskamux ! filesink location=/dev/stdout | ffmpeg -y -i - -c:v libx264 ${outputvideo}mp4
+# fdsink 可替换成 filesink location=/dev/stdout
+gst-launch-1.0 -v -q  videotestsrc pattern=0 ! video/x-raw,width=1280,height=720  ! matroskamux ! fdsink | ffmpeg -y -i - -c:v libx264  -preset faster -crf 25 ${outputvideo}mp4
 
 
 
