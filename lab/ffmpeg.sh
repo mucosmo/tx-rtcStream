@@ -16,6 +16,10 @@ svg=../files/resources/svg.svg
 rtmp=rtmp://175.178.31.221:51013/live/m23920142203224065
 m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8
 dh=../files/resources/dh.mp4
+subtitles=../files/resources/subtitles.srt
+font=/usr/share/fonts/chinese/SIMKAI.TTF
+drawtext="你好啊"
+drawtextfile=../files/resources/drawtext.txt
 
 # ffmpeg -hide_banner -h filter=transpose
 
@@ -54,9 +58,4 @@ dh=../files/resources/dh.mp4
 # gst-launch-1.0 -v -q  videotestsrc pattern=0 ! video/x-raw,width=1280,height=720  ! matroskamux ! fdsink | ffmpeg -y -i - -i ${rtmp} -filter_complex "[1:v]scale=150:-1[ov1];[0][ov1]overlay=-20:H*0.6" -c:v libx264 -t 5 -preset faster -crf 25 -r 30 ${outputvideo}mp4
 
 # 错误条纹
-ffmpeg -i ${video1} -i ${rtmp} -filter_complex "[1]scale=200:-1,chromakey=0x00ff00:0.3:0.05[ov1];[0][ov1]overlay=0:H*0.6" -c:v libx264  -preset slow -t 5 -crf 25 -r 30 ${outputvideo}mp4
-
-# ffmpeg -y -i ${rtmp}  -c:v copy  -f mp4 ${outputvideo}mp4
-
-
-
+gst-launch-1.0 -v -q filesrc location=${video1} ! fdsink | ffmpeg -i - -i ${png} -i ${mask} -i ${video2} -i ${gif} -i ${dh}  -filter_complex "[1]crop=100:50:200:200[cropped1];[2]alphaextract[amask];[amask]scale=150:150[vmask];[3:v]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[4:v]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[5:v]scale=150:-1,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20:H*0.6[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2" -max_muxing_queue_size 1024 ${outputvideo}mp4
