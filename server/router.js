@@ -377,10 +377,7 @@ async function createExpressApp() {
                     const peersInRoom = Object.keys(global.streamInfo[room])
                     peers.push(peersInRoom)
                 }
-                const data = {
-                    room: "room1",
-                    user: "user1"
-                };
+                const data = req.body;
                 let roomIdNum = Number(data.room.slice(-1)) // 前段传递的伪数据
                 let userIdNum = Number(data.user.slice(-1))
                 const roomId = rooms[roomIdNum - 1]

@@ -153,7 +153,7 @@ module.exports = class GStreamer {
     return [
       'matroskamux name=mux',
       `! fdsink`,
-      `| ffmpeg -y -i -  -i ${dh} -filter_complex "[1:v]crop=200:300:200:150,chromakey=0x00ff00:0.3:0.05[ov1];[0][ov1]overlay=0:H*0.4" -c:v libx264  -preset slow -crf 25 ${RECORD_FILE_LOCATION_PATH}/${Date.now()}.mp4`
+      `| ffmpeg -y -i -  -i ${rtmp} -filter_complex "[1:v]scale=200:-1,chromakey=0x00ff00:0.3:0.05[ov1];[0][ov1]overlay=0:H*0.4" -c:v libx264  -preset slow -crf 25 ${RECORD_FILE_LOCATION_PATH}/${Date.now()}.mp4`
     ];
   }
 }

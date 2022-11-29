@@ -13,7 +13,7 @@ png=../files/resources/fileimage.png
 gif=../files/resources/gif.gif
 mask=../files/resources/mask.png
 svg=../files/resources/svg.svg
-rtmp=rtmp://175.178.31.221:51013/live/m23905647594569729
+rtmp=rtmp://175.178.31.221:51013/live/m23920142203224065
 m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8
 dh=../files/resources/dh.mp4
 
@@ -53,8 +53,8 @@ dh=../files/resources/dh.mp4
 # # fdsink 可替换成 filesink location=/dev/stdout
 # gst-launch-1.0 -v -q  videotestsrc pattern=0 ! video/x-raw,width=1280,height=720  ! matroskamux ! fdsink | ffmpeg -y -i - -i ${rtmp} -filter_complex "[1:v]scale=150:-1[ov1];[0][ov1]overlay=-20:H*0.6" -c:v libx264 -t 5 -preset faster -crf 25 -r 30 ${outputvideo}mp4
 
-# # 错误条纹
-# ffmpeg -i ${video1} -i ${rtmp} -filter_complex "[1]scale=iw/2:-1[ov1];[0][ov1]overlay=0:H*0.6" -c:v libx264  -preset slow -t 5 -crf 25 -r 30 ${outputvideo}mp4
+# 错误条纹
+ffmpeg -i ${video1} -i ${rtmp} -filter_complex "[1]scale=200:-1,chromakey=0x00ff00:0.3:0.05[ov1];[0][ov1]overlay=0:H*0.6" -c:v libx264  -preset slow -t 5 -crf 25 -r 30 ${outputvideo}mp4
 
 # ffmpeg -y -i ${rtmp}  -c:v copy  -f mp4 ${outputvideo}mp4
 
