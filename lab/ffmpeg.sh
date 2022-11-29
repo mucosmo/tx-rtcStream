@@ -2,7 +2,7 @@
 
 timestamp=$(date +%s)
 
-outputvideo=../files/resources/ffmpeg/${timestamp}.
+outputvideo=../files/composite/${timestamp}.
 
 # 568*320
 video1=../files/resources/filevideo.mp4
@@ -13,8 +13,9 @@ png=../files/resources/fileimage.png
 gif=../files/resources/gif.gif
 mask=../files/resources/mask.png
 svg=../files/resources/svg.svg
-rtmp=rtmp://175.178.31.221:51013/live/m23772368635691009
+rtmp=rtmp://175.178.31.221:51013/live/m23905647594569729
 m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8
+dh=../files/resources/dh.mp4
 
 # ffmpeg -hide_banner -h filter=transpose
 
@@ -48,10 +49,14 @@ m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live
 #  gst-launch-1.0 -v videotestsrc pattern=snow ! video/x-raw,width=1280,height=720  ! filesink location= /dev/stdout | ffmpeg -y -i - -codec copy -f flv test.flv
 
 
-# 从 gstreamer 输出到 ffmpeg
-# fdsink 可替换成 filesink location=/dev/stdout
-gst-launch-1.0 -v -q  videotestsrc pattern=0 ! video/x-raw,width=1280,height=720  ! matroskamux ! fdsink | ffmpeg -y -i - -c:v libx264  -preset faster -crf 25 ${outputvideo}mp4
+# # 从 gstreamer 输出到 ffmpeg
+# # fdsink 可替换成 filesink location=/dev/stdout
+# gst-launch-1.0 -v -q  videotestsrc pattern=0 ! video/x-raw,width=1280,height=720  ! matroskamux ! fdsink | ffmpeg -y -i - -i ${rtmp} -filter_complex "[1:v]scale=150:-1[ov1];[0][ov1]overlay=-20:H*0.6" -c:v libx264 -t 5 -preset faster -crf 25 -r 30 ${outputvideo}mp4
+
+# # 错误条纹
+# ffmpeg -i ${video1} -i ${rtmp} -filter_complex "[1]scale=iw/2:-1[ov1];[0][ov1]overlay=0:H*0.6" -c:v libx264  -preset slow -t 5 -crf 25 -r 30 ${outputvideo}mp4
+
+# ffmpeg -y -i ${rtmp}  -c:v copy  -f mp4 ${outputvideo}mp4
 
 
 
- 
