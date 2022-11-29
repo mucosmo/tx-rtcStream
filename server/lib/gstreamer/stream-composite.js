@@ -146,10 +146,14 @@ module.exports = class GStreamer {
       fs.mkdirSync(RECORD_FILE_LOCATION_PATH)
     }
 
+    const video2 = '/opt/www/tx-rtcStream/files/resources/video2.mp4';
+    const rtmp='rtmp:\/\/175.178.31.221:51013\/live\/m23902200782651393';
+    const dh = '/opt/www/tx-rtcStream/files/resources/dh.mp4';
+
     return [
       'matroskamux name=mux',
       `! fdsink`,
-      `| ffmpeg -y -i - -c:v libx264  -preset slow -crf 25 ${RECORD_FILE_LOCATION_PATH}/${Date.now()}.mp4`
+      `| ffmpeg -y -i -  -i ${dh} -filter_complex "[1:v]crop=200:300:200:150,chromakey=0x00ff00:0.3:0.05[ov1];[0][ov1]overlay=0:H*0.4" -c:v libx264  -preset slow -crf 25 ${RECORD_FILE_LOCATION_PATH}/${Date.now()}.mp4`
     ];
   }
 }
