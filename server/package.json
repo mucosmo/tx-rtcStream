@@ -19,6 +19,7 @@
     "colors": "^1.4.0",
     "debug": "^4.3.1",
     "express": "^4.17.1",
+    "ffi-napi": "^4.0.3",
     "heapdump": "^0.3.15",
     "mediasoup": "^3.10.12",
     "pidusage": "^2.0.21",
