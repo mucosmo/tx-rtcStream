@@ -1,7 +1,5 @@
 var ffi = require('ffi-napi');
-var demo = ffi.Library('./libfilter',{'main':['int',['string']]});
-
-console.log(demo)
+var demo = ffi.Library('./filter',{'avfilter':['int',['string']]});
 
 const video = '/opt/www/tx-rtcStream/files/resources/dh.mp4'
-demo.main(video);
+demo.avfilter(video);

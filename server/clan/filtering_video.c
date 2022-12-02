@@ -207,18 +207,13 @@ static void display_frame(const AVFrame *frame, AVRational time_base)
     fflush(stdout);
 }
 
-int main(int argc, char **argv)
+int avfilter(const char *filename)
 {
     int ret;
     AVPacket *packet;
     AVFrame *frame;
     AVFrame *filt_frame;
-
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s file\n", argv[0]);
-        exit(1);
-    }
-
+ 
     frame = av_frame_alloc();
     filt_frame = av_frame_alloc();
     packet = av_packet_alloc();
@@ -227,7 +222,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    if ((ret = open_input_file(argv[1])) < 0)
+    if ((ret = open_input_file(filename)) < 0)
         goto end;
     if ((ret = init_filters(filter_descr)) < 0)
         goto end;

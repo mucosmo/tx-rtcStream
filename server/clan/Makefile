@@ -24,7 +24,7 @@ resampling_audio:  LDLIBS += -lm
 
 .phony: all clean-test clean
 
-all: $(OBJS) $(EXAMPLES)
+all: $(OBJS)
 
 clean-test:
 	$(RM) test*.pgm test.h264 test.mp2 test.sw test.mpg
