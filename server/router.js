@@ -393,6 +393,25 @@ async function createExpressApp() {
         });
 
 
+            /**
+     * 从房间拉流并进行相应操作（dm/rec/live/mux/transcript)
+     */
+    expressApp.post(
+        '/stream/render',
+        async (req, res, next) => {
+            try {
+
+                const input = '/opt/www/tx-rtcStream/server/clan/input.txt';
+                fs.writeFileSync(input, req.body.text, 'utf8');
+
+                res.status(200).json({text: req.body});
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+
+
     /**
 * 将外部流（数字人）推送到房间
 */
