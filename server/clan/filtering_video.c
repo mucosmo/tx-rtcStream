@@ -47,7 +47,7 @@ typedef struct student
     float score;
 } stu;
 
-const char *filter_descr = "scale=100:-1,drawtext=fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:text=100:x=(w-tw)/2:y=(h-th)/2:fontcolor=green:fontsize=30";
+const char *filter_descr = "scale=100:-1,drawtext=fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:text=100:x=(w-tw)/2:y=h-10:fontcolor=green:fontsize=30";
 /* other way:
    scale=78:24 [scl]; [scl] transpose=cclock // assumes "[in]" and "[out]" to be input output pads respectively
  */
@@ -338,7 +338,7 @@ int avfilter(const char *filename, const char *input)
                 // printf("fread():\n%s", buff);
                 fclose(f);
 
-                av_opt_set(filter_ctx1->priv, "text", buff, 0);
+                av_opt_set(filter_ctx1->priv, "x", buff, 0);
            
 
 
@@ -360,8 +360,10 @@ int avfilter(const char *filename, const char *input)
                         goto end;
                     display_frame(filt_frame, buffersink_ctx->inputs[0]->time_base);
                     av_frame_unref(filt_frame);
+                    sleep(1);
                 }
                 av_frame_unref(frame);
+                sleep(1);
             }
         }
         av_packet_unref(packet);
