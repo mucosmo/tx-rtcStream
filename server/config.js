@@ -10,7 +10,7 @@
 
 const os = require('os');
 
-process.env.MEDIASOUP_ANNOUNCED_IP =  '161.189.43.94';  // must be public IP
+process.env.MEDIASOUP_ANNOUNCED_IP =  '121.5.133.154';  // must be public IP
 
 module.exports =
 {
