@@ -159,14 +159,14 @@ async function runHttpsServer() {
 	expressApp = await createExpressApp();
 
 
-	// // HTTPS server for the protoo WebSocket server.
-	// const tls =
-	// {
-	// 	cert: fs.readFileSync(config.https.tls.cert),
-	// 	key: fs.readFileSync(config.https.tls.key)
-	// };
+	// HTTPS server for the protoo WebSocket server.
+	const tls =
+	{
+		cert: fs.readFileSync(config.https.tls.cert),
+		key: fs.readFileSync(config.https.tls.key)
+	};
 
-	httpsServer = https.createServer({}, expressApp);
+	httpsServer = https.createServer(tls, expressApp);
 
 	await new Promise((resolve) => {
 		httpsServer.listen(
