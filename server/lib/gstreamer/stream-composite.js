@@ -140,25 +140,25 @@ module.exports = class GStreamer {
 
   get _sinkArgs() {
     const fileName = this._rtpParameters.fileName;
-    const RECORD_FILE_LOCATION_PATH = `/opt/www/tx-rtcStream/files/composite`;
+    const RECORD_FILE_LOCATION_PATH = `/opt/application/tx-rtcStream/files/composite`;
 
     if (!fs.existsSync(RECORD_FILE_LOCATION_PATH)) {
       fs.mkdirSync(RECORD_FILE_LOCATION_PATH)
     }
 
-    const dh = '/opt/www/tx-rtcStream/files/resources/dh.mp4';
-    const video1 = '/opt/www/tx-rtcStream/files/resources/filevideo.mp4';
-    const video2 = '/opt/www/tx-rtcStream/files/resources/video2.mp4';
-    const png = '/opt/www/tx-rtcStream/files/resources/fileimage.png';
-    const gif = '/opt/www/tx-rtcStream/files/resources/gif.gif';
-    const mask = '/opt/www/tx-rtcStream/files/resources/mask.png';
-    const svg = '/opt/www/tx-rtcStream/files/resources/svg.svg';
+    const dh = '/opt/application/tx-rtcStream/files/resources/dh.mp4';
+    const video1 = '/opt/application/tx-rtcStream/files/resources/filevideo.mp4';
+    const video2 = '/opt/application/tx-rtcStream/files/resources/video2.mp4';
+    const png = '/opt/application/tx-rtcStream/files/resources/fileimage.png';
+    const gif = '/opt/application/tx-rtcStream/files/resources/gif.gif';
+    const mask = '/opt/application/tx-rtcStream/files/resources/mask.png';
+    const svg = '/opt/application/tx-rtcStream/files/resources/svg.svg';
     const rtmp = 'rtmp://175.178.31.221:51013/live/m24072639832129537';
-    const m3u8 = 'http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8';
-    const subtitles = '/opt/www/tx-rtcStream/files/resources/subtitles.srt';
+    const m3u8 = 'https://cosmoserver.tk:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8';
+    const subtitles = '/opt/application/tx-rtcStream/files/resources/subtitles.srt';
     const font = '/usr/share/fonts/chinese/SIMKAI.TTF';
     const drawtext = '你好啊';
-    const drawtextfile = '/opt/www/tx-rtcStream/files/resources/drawtext.txt';
+    const drawtextfile = '/opt/application/tx-rtcStream/files/resources/drawtext.txt';
 
     return [
       'matroskamux name=mux',

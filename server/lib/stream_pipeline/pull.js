@@ -15,7 +15,7 @@ const kill = require('../../lib/child_process')
  */
 module.exports.liveStreamUrl = (roomId, peerId) => {
     const recordInfo = global.streamInfo[roomId][peerId]
-    if (!fs.existsSync(`/opt/www/tx-rtcStream/files/${recordInfo.fileName}`)) {
+    if (!fs.existsSync(`/opt/application/tx-rtcStream/files/${recordInfo.fileName}`)) {
         const consumers = global.streamInfo[roomId][peerId]["consumers"]
         global.peer.process = new GStreamerLive(recordInfo);
         setTimeout(async () => {
@@ -31,7 +31,7 @@ module.exports.liveStreamUrl = (roomId, peerId) => {
     const filePath = `${recordInfo.fileName}/mediasoup_live.m3u8`
     const sessionId = `tx_live_${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
     global.processObj[sessionId] = global.peer.process._process.pid;
-    return { sessionId, liveUrl: `http://hz-test.ikandy.cn:60125/files/${filePath}` }
+    return { sessionId, liveUrl: `https://cosmoserver.tk:60125/files/${filePath}` }
 }
 
 

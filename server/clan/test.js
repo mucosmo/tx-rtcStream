@@ -6,9 +6,9 @@ var filter = ffi.Library('./filter', {
     "readfile": ['int', ['string', 'string']],
 });
 
-const video = '/opt/www/tx-rtcStream/files/resources/dh.mp4';
-const input = '/opt/www/tx-rtcStream/server/clan/input.txt';
-const output = '/opt/www/tx-rtcStream/server/clan/output.txt';
+const video = '/opt/application/tx-rtcStream/files/resources/dh.mp4';
+const input = '/opt/application/tx-rtcStream/server/clan/input.txt';
+const output = '/opt/application/tx-rtcStream/server/clan/output.txt';
 
 filter.avfilter(video, input);
 

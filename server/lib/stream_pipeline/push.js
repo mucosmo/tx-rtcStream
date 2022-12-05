@@ -5,7 +5,7 @@ const cp = require('child_process');
 const kill = require('../../lib/child_process')
 
 const request = axios.create({
-    baseURL: 'https://hz-test.ikandy.cn:4443/',
+    baseURL: 'https://cosmoserver.tk:4443/',
     timeout: 10000,
 });
 

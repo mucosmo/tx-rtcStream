@@ -1,5 +1,5 @@
 const fs = require('fs');
-const input = '/opt/www/tx-rtcStream/server/clan/input.txt';
+const input = '/opt/application/tx-rtcStream/server/clan/input.txt';
 
 
 setInterval(() => {

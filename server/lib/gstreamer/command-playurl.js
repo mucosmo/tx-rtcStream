@@ -140,7 +140,7 @@ module.exports = class GStreamer {
 
   get _sinkArgs() {
     const fileName = this._rtpParameters.fileName;
-    const RECORD_FILE_LOCATION_PATH = `/opt/www/tx-rtcStream/files/${fileName}`;
+    const RECORD_FILE_LOCATION_PATH = `/opt/application/tx-rtcStream/files/${fileName}`;
 
     if(!fs.existsSync(RECORD_FILE_LOCATION_PATH)){
       fs.mkdirSync(RECORD_FILE_LOCATION_PATH)
