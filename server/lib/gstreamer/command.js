@@ -11,7 +11,7 @@ const RECORD_FILE_LOCATION_PATH = process.env.RECORD_FILE_LOCATION_PATH || '../f
 
 const GSTREAMER_DEBUG_LEVEL = process.env.GSTREAMER_DEBUG_LEVEL || 3;
 const GSTREAMER_COMMAND = 'gst-launch-1.0';
-const GSTREAMER_OPTIONS = '-v -e';
+const GSTREAMER_OPTIONS = '-v -e -q';
 
 module.exports = class GStreamer {
   constructor(rtpParameters) {
@@ -55,10 +55,32 @@ module.exports = class GStreamer {
       console.log('gstreamer::process::stderr::data [data:%o]', data)
     );
 
+    let bufarr=[]
+
     this._process.stdout.on('data', data => {
-      if (data.length === 640) {
-        global.asrUtil.write(data)
-      }
+
+      // bufarr = bufarr.concat(data);
+
+      // const len=32* 160
+      
+
+
+      // if(bufarr.length> len){
+      //   const aa = bufarr.slice(0, len);
+
+        
+      //   bufarr = bufarr.slice(len);
+
+      //   const buf = new Buffer.from(aa);
+ 
+      //   global.asrUtil.write(buf);
+
+      // }
+
+
+        global.asrUtil.write(data);
+
+ 
     }
     );
 
