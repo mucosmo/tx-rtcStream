@@ -232,7 +232,7 @@ static void display_frame(const AVFrame *frame, AVRational time_base)
 
     /* Trivial ASCII grayscale display. */
     p0 = frame->data[0];
-    puts("\033c");
+    puts("\033c"); // 清除终端
     for (y = 0; y < frame->height; y++)
     {
         p = p0;
@@ -242,45 +242,6 @@ static void display_frame(const AVFrame *frame, AVRational time_base)
         p0 += frame->linesize[0];
     }
     fflush(stdout);
-}
-
-char readfile(const char *input)
-{
-    // //打开文件
-    // FILE *r = fopen(input, "r");
-    // assert(r != NULL);
-    // FILE *w = fopen(output, "w");
-    // assert(w != NULL);
-
-    // //读写文件
-    // stu a[128];
-    // int i = 0;
-    // while (fgets(r, "%s%d%s%f", a[i].name, &a[i].no, a[i].sex, &a[i].score) != EOF)
-    // {
-    //     printf("%s\t%d\t%s\t%g\n", a[i].name, a[i].no, a[i].sex, a[i].score);     //输出到显示器屏幕
-    //     fprintf(w, "%s\t%d\t%s\t%g\n", a[i].name, a[i].no, a[i].sex, a[i].score); //输出到文件B.txt
-    //     i++;
-    // }
-
-    // //关闭文件
-    // fclose(r);
-    // fclose(w);
-
-    // return 0;
-    char buff[1024] = {0};
-    FILE *f = fopen(input, "r");
-    // fgets demo
-    fgets(buff, 1024, f); //正确读取全文格式:while( fgets(buff,1024,f) ) ....;
-    // printf("fgets():\n%s", buff);
-
-    // buff[0] = 0; //清空
-    // rewind(f);   //文件指针回到初始
-
-    // // fread() demo
-    // fread(buff, 1, 1023, f);
-    // printf("fread():\n%s", buff);
-    fclose(f);
-    return *buff;
 }
 
 int avfilter(const char *filename, const char *input)
