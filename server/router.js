@@ -404,7 +404,7 @@ async function createExpressApp() {
                 const input = '/opt/application/tx-rtcStream/server/clan/input.txt';
                 fs.writeFileSync(input, req.body.text, 'utf8');
 
-                res.status(200).json({text: req.body});
+                res.status(200).json({text: req.body.text});
             }
             catch (error) {
                 next(error);
