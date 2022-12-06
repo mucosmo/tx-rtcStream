@@ -512,6 +512,6 @@ int pushStream(const char *inUrl, const char *outUrl)
     }
 
     // cout << "file to rtmp test" << endl;
-    getchar();
+    // getchar();
     return 0;
 }
