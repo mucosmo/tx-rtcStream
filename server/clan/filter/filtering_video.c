@@ -34,6 +34,9 @@
 #include <string.h>
 #include <assert.h>
 
+#include <unistd.h>   
+#include <fcntl.h>
+
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavfilter/buffersink.h>
@@ -322,26 +325,17 @@ int avfilter(const char *filename, const char *input)
 
                 frame->pts = frame->best_effort_timestamp;
 
-                AVFilterContext *filter_ctx1 = filter_graph->filters[3];
+                if ((access("/opt/application/tx-rtcStream/server/clan/input.txt", F_OK)) != -1)
+                {
+                    char buff[1024] = {0};
+                    FILE *f = fopen(input, "r+");
+                    fgets(buff, 1024, f); //正确读取全文格式:while( fgets(buff,1024,f) ) ....;
+                    fclose(f);
+                    init_filters(buff);
+                }
 
-                char buff[1024] = {0};
-                FILE *f = fopen(input, "r+");
-                // fgets demo
-                fgets(buff, 1024, f); //正确读取全文格式:while( fgets(buff,1024,f) ) ....;
-                // printf("fgets():\n%s", buff);
-
-                // buff[0] = 0; //清空
-                // rewind(f);   //文件指针回到初始
-
-                // // fread() demo
-                // fread(buff, 1, 1023, f);
-                // printf("fread():\n%s", buff);
-                fclose(f);
-
-                av_opt_set(filter_ctx1->priv, "x", buff, 0);
-           
-
-
+                // AVFilterContext *filter_ctx1 = filter_graph->filters[3];
+                // av_opt_set(filter_ctx1->priv, "x", buff, 0);
 
                 /* push the decoded frame into the filtergraph */
                 if (av_buffersrc_add_frame_flags(buffersrc_ctx, frame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0)
@@ -360,10 +354,8 @@ int avfilter(const char *filename, const char *input)
                         goto end;
                     display_frame(filt_frame, buffersink_ctx->inputs[0]->time_base);
                     av_frame_unref(filt_frame);
-                    sleep(1);
                 }
                 av_frame_unref(frame);
-                sleep(1);
             }
         }
         av_packet_unref(packet);
