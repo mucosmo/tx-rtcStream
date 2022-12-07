@@ -12,6 +12,7 @@ CFLAGS := $(shell pkg-config --cflags $(FFMPEG_LIBS)) $(CFLAGS)
 LDLIBS := $(shell pkg-config --libs $(FFMPEG_LIBS)) $(LDLIBS)
 
 EXAMPLES=       filtering_video                     \
+                transcoding
                
 
 OBJS=$(addsuffix .o,$(EXAMPLES))
@@ -24,7 +25,7 @@ resampling_audio:  LDLIBS += -lm
 
 .phony: all clean-test clean
 
-all: $(OBJS)
+all: $(OBJS) ${EXAMPLES}
 
 clean-test:
 	$(RM) test*.pgm test.h264 test.mp2 test.sw test.mpg
