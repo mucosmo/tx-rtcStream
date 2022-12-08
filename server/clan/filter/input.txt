@@ -1,1 +1,1 @@
-scale=100:-1,drawtext=fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:text=100:x=(w-tw)/2:y=h-10:fontcolor=green:fontsize=30
+movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];[in][m0]overlay=100:30
