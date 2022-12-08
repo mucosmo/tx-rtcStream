@@ -625,22 +625,17 @@ int main(int argc, char **argv)
     if ((ret = open_output_file(argv[2])) < 0)
         goto end;
 
-    // if ((access(filterPath, F_OK)) != -1)
-    // {
-    //     char buff[1024] = {0};
-    //     FILE *f = fopen(filterPath, "r+");
-    //     fgets(buff, 1024, f);
-    //     // fclose(f);
-    //     init_filters(buff);
-    // }
+    if ((access(filterPath, F_OK)) != -1)
+    {
+        char buff[1024] = {0};
+        FILE *f = fopen(filterPath, "r+");
+        fgets(buff, 1024, f);
+        fclose(f);
+        remove(filterPath);
+        if ((ret = init_filters(buff)) < 0)
+            goto end;
+    }
 
-    char buff[1024] = {0};
-    FILE *f = fopen(filterPath, "r+");
-    fgets(buff, 1024, f);
-    fclose(f);
-
-    if ((ret = init_filters(buff)) < 0)
-        goto end;
     if (!(packet = av_packet_alloc()))
         goto end;
 
@@ -650,14 +645,21 @@ int main(int argc, char **argv)
     while (1)
     {
 
+        const int open = access(filterPath, F_OK);
+
+        if (open != -1)
+        {
+            char buff[1024] = {0};
+            FILE *f = fopen(filterPath, "r+");
+            fgets(buff, 1024, f);
+            fclose(f);
+            remove(filterPath);
+            if ((ret = init_filters(buff)) < 0)
+                goto end;
+        }
+
         if ((ret = av_read_frame(ifmt_ctx, packet)) < 0)
             break;
-
-        // char buff[1024] = {0};
-        // FILE *f = fopen(filterPath, "r+");
-        // fgets(buff, 1024, f);
-        // fclose(f);
-        // init_filters(buff);
 
         stream_index = packet->stream_index;
         av_log(NULL, AV_LOG_DEBUG, "Demuxer gave frame of stream_index %u\n",
@@ -681,15 +683,6 @@ int main(int argc, char **argv)
 
             while (ret >= 0)
             {
-                // if ((access(filterPath, F_OK)) != -1)
-                // {
-                //     char buff[1024] = {0};
-                //     FILE *f = fopen(filterPath, "r+");
-                //     fgets(buff, 1024, f);
-                //     // fclose(f);
-                //     init_filters(buff);
-                // }
-
                 ret = avcodec_receive_frame(stream->dec_ctx, stream->dec_frame); // 解码后的音视频帧
                 if (ret == AVERROR_EOF || ret == AVERROR(EAGAIN))
                     break;
