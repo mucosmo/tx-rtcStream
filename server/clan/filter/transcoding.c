@@ -34,6 +34,7 @@
 #include <libavfilter/buffersrc.h>
 #include <libavutil/channel_layout.h>
 #include <libavutil/opt.h>
+#include <libavutil/time.h>
 #include <libavutil/pixdesc.h>
 
 #include <unistd.h>
@@ -53,6 +54,8 @@ typedef struct FilteringContext
 } FilteringContext;
 static FilteringContext *filter_ctx;
 
+long long startTime = 0;
+
 const char *filterPath = "/opt/application/tx-rtcStream/server/clan/filter/input.txt";
 
 typedef struct StreamContext
@@ -63,6 +66,45 @@ typedef struct StreamContext
     AVFrame *dec_frame;
 } StreamContext;
 static StreamContext *stream_ctx;
+
+/**
+ * 帧率转小数
+ */
+static double r2d(AVRational r)
+{
+    return r.num == 0 || r.den == 0 ? 0. : (double)r.num / (double)r.den;
+}
+
+/** 避免报错 [libx264 @ 0x5646a6ab1440] non-strictly-monotonic PTS */
+static int video_sleep(AVPacket pkt)
+{
+    // 计算转换pts dts
+    AVRational itime = ifmt_ctx->streams[pkt.stream_index]->time_base;
+    AVRational otime = ofmt_ctx->streams[pkt.stream_index]->time_base;
+
+    pkt.pts = av_rescale_q(pkt.pts, itime, otime);
+    pkt.dts = av_rescale_q(pkt.dts, itime, otime);
+    pkt.duration = av_rescale_q(pkt.duration, itime, otime);
+    pkt.pos = -1;
+
+    printf("%ld,  %ld, %ld \n", pkt.pts, pkt.dts, pkt.duration);
+
+    // 视频帧推送速度
+    if (ifmt_ctx->streams[pkt.stream_index]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO || ifmt_ctx->streams[pkt.stream_index]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+    {
+        // 已经过去的时间
+        long long now = av_gettime() - startTime;
+        long long pts = 0;
+        pts = pkt.pts * (1000 * 1000 * r2d(otime));
+        if (pts > now)
+        {
+            printf("--- push av_sleep %lld \n", pts - now);
+            av_usleep(pts - now);
+        }
+    }
+
+    return 0;
+}
 
 static int open_input_file(const char *filename)
 {
@@ -502,6 +544,9 @@ static int encode_write_frame(unsigned int stream_index, int flush)
                              ofmt_ctx->streams[stream_index]->time_base);
 
         av_log(NULL, AV_LOG_DEBUG, "Muxing frame\n");
+
+        // video_sleep(*enc_pkt);
+
         /* mux encoded frame */
         ret = av_interleaved_write_frame(ofmt_ctx, enc_pkt);
     }
@@ -543,6 +588,7 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index)
 
         filter->filtered_frame->pict_type = AV_PICTURE_TYPE_NONE;
         ret = encode_write_frame(stream_index, 0);
+
         av_frame_unref(filter->filtered_frame);
         if (ret < 0)
             break;
@@ -599,11 +645,19 @@ int main(int argc, char **argv)
         goto end;
 
     /* read all packets */
+    startTime = av_gettime();
+
     while (1)
     {
 
         if ((ret = av_read_frame(ifmt_ctx, packet)) < 0)
             break;
+
+        // char buff[1024] = {0};
+        // FILE *f = fopen(filterPath, "r+");
+        // fgets(buff, 1024, f);
+        // fclose(f);
+        // init_filters(buff);
 
         stream_index = packet->stream_index;
         av_log(NULL, AV_LOG_DEBUG, "Demuxer gave frame of stream_index %u\n",
@@ -618,7 +672,7 @@ int main(int argc, char **argv)
             av_packet_rescale_ts(packet,
                                  ifmt_ctx->streams[stream_index]->time_base,
                                  stream->dec_ctx->time_base);
-            ret = avcodec_send_packet(stream->dec_ctx, packet);
+            ret = avcodec_send_packet(stream->dec_ctx, packet); // 解压缩数据包
             if (ret < 0)
             {
                 av_log(NULL, AV_LOG_ERROR, "Decoding failed\n");
@@ -636,7 +690,7 @@ int main(int argc, char **argv)
                 //     init_filters(buff);
                 // }
 
-                ret = avcodec_receive_frame(stream->dec_ctx, stream->dec_frame);
+                ret = avcodec_receive_frame(stream->dec_ctx, stream->dec_frame); // 解码后的音视频帧
                 if (ret == AVERROR_EOF || ret == AVERROR(EAGAIN))
                     break;
                 else if (ret < 0)
