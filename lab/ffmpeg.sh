@@ -2,7 +2,7 @@
 
 timestamp=$(date +%s)
 
-outputvideo=../files/composites/${timestamp}.
+outputvideo=../files/composites/shell-${timestamp}.
 
 # 568*320
 video1=../files/resources/filevideo.mp4
@@ -22,6 +22,8 @@ subtitles=../files/resources/subtitles.srt
 font=/usr/share/fonts/chinese/SIMKAI.TTF
 drawtext="你好啊"
 drawtextfile=../files/resources/drawtext.txt
+screen5s=../files/resources/screen5s.mp4
+
 
 # ffmpeg -hide_banner -h filter=transpose
 
@@ -54,8 +56,9 @@ drawtextfile=../files/resources/drawtext.txt
 # # # 循环播放
 # ffmpeg -i ${video1}    -filter_complex "loop=loop=-1:size=500:start=0" -max_muxing_queue_size  1024  -r 25 -f flv rtmp://121.5.133.154:1935/myapp/12345
 
-# 简单转码, 设置码率(清晰度) -b 2M     直播时固定输入帧率 -re
-ffmpeg -re -i ${office} -filter_complex "scale=500:-1,drawtext=fontfile=${font}:text=TXCO:x=30:y=20:fontcolor=green:fontsize=50" -c:v flv -b:v 3M -f flv rtmp://121.5.133.154:1935/myapp/12345
+# # 简单转码, 设置码率(清晰度) -b 2M     直播时固定输入帧率 -re
+# ffmpeg -re -i ${office} -filter_complex "scale=500:-1,drawtext=fontfile=${font}:text=TXCO:x=30:y=20:fontcolor=green:fontsize=50" -c:v flv -b:v 3M -f flv rtmp://121.5.133.154:1935/myapp/12345
+
 
 # # -q 参数可以压制调试模式的数据输出
 #  gst-launch-1.0 -v videotestsrc pattern=snow ! video/x-raw,width=1280,height=720  ! filesink location= /dev/stdout | ffmpeg -y -i - -codec copy -f flv test.flv
@@ -69,6 +72,14 @@ ffmpeg -re -i ${office} -filter_complex "scale=500:-1,drawtext=fontfile=${font}:
 # gst-launch-1.0 -v -q filesrc location=${rtmp} ! fdsink | ffmpeg -i - -i ${png} -i ${mask} -i ${video2} -i ${gif} -i ${dh}  -filter_complex "[1]crop=100:50:200:200[cropped1];[2]alphaextract[amask];[amask]scale=150:150[vmask];[3:v]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[4:v]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[5:v]chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.5[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:reload=1:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2" -max_muxing_queue_size 1024 -f flv rtmp://localhost:1935/myapp/12345
 
 
+# # 打开多个文件时可以把其他文件放到 filter 中的 movie 路径
+# ffmpeg -re -i ${office} -filter_complex "movie=${png}[m0];movie=${video1}[m1];[m0]scale=200:-1[m0scale];[m1]scale=300:-1[m1scale];[0][m0scale]overlay=2:2[out1];[out1][m1scale]overlay=200:100" -t 5 ${outputvideo}mp4
+
+ ffmpeg -re -i ${screen5s} -filter_complex "scale=200:350" -t 5 ${outputvideo}mp4
+
+
+
+
 # # #  test-hz 服务器上 ffmpeg 的构造
 # PKG_CONFIG_PATH="/opt/program/ffmpeg/lib/pkgconfig" ./configure \
 #   --pkg-config-flags="--static" \
@@ -77,3 +88,12 @@ ffmpeg -re -i ${office} -filter_complex "scale=500:-1,drawtext=fontfile=${font}:
 #   --extra-libs="-lpthread -lm" \
 #   --ld="g++"  --prefix=/opt/program/ffmpeg --enable-shared --enable-gpl --enable-version3 --enable-static --disable-debug --disable-ffplay --disable-indev=sndio --disable-outdev=sndio --cc=gcc --enable-fontconfig  --enable-gnutls --enable-gmp --enable-gray --enable-libaom --enable-libfribidi --enable-libass --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libvpx  --enable-libx264 --enable-libx265 
 
+
+# # c 程序转码时绘制文本
+# drawtext=text=string1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40
+
+# # 源码 overlay image 和 video
+#  movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];movie=/opt/application/tx-rtcStream/files/resources/screen5s.mp4[m1];[in][m0]overlay=20:200[out1];[out1][m1]overlay=200:100
+
+# # 源码 scale 大小
+# scale=200:-300
