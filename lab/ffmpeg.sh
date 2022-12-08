@@ -15,7 +15,7 @@ png=../files/resources/fileimage.png
 gif=../files/resources/gif.gif
 mask=../files/resources/mask.png
 svg=../files/resources/svg.svg
-rtmp=rtmp://175.178.31.221:51013/live/m25126490957938689
+rtmp=rtmp://175.178.31.221:51013/live/m25257031740948481
 m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8
 dh=../files/resources/dh.mp4
 subtitles=../files/resources/subtitles.srt
@@ -68,14 +68,22 @@ screen5s=../files/resources/screen5s.mp4
 # # fdsink 可替换成 filesink location=/dev/stdout
 # gst-launch-1.0 -v -q  videotestsrc pattern=0 ! video/x-raw,width=1280,height=720  ! matroskamux ! fdsink | ffmpeg -y -i - -i ${rtmp} -filter_complex "[1:v]scale=150:-1[ov1];[0][ov1]overlay=-20:H*0.6" -c:v libx264 -t 5 -preset faster -crf 25 -r 30 ${outputvideo}mp4
 
-# # 错误条纹
-# gst-launch-1.0 -v -q filesrc location=${rtmp} ! fdsink | ffmpeg -i - -i ${png} -i ${mask} -i ${video2} -i ${gif} -i ${dh}  -filter_complex "[1]crop=100:50:200:200[cropped1];[2]alphaextract[amask];[amask]scale=150:150[vmask];[3:v]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[4:v]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[5:v]chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.5[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:reload=1:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2" -max_muxing_queue_size 1024 -f flv rtmp://localhost:1935/myapp/12345
+# # 从 gst 输出一个源作为 ffmpeg 的输入进行合成
+# gst-launch-1.0 -v -q filesrc location=${video1} ! fdsink | ffmpeg -i - -i ${png} -i ${mask} -i ${video2} -i ${gif} -i ${dh}  -filter_complex "[1]crop=100:50:200:200[cropped1];[2]alphaextract[amask];[amask]scale=150:150[vmask];[3:v]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[4:v]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[5:v]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:reload=1:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2"  ${outputvideo}mp4
+
+# # 多文件合成
+# ffmpeg -i ${video1} -i ${png} -i ${mask} -i ${video2} -i ${gif} -i ${rtmp}  -filter_complex "[1]crop=100:50:200:200[cropped1];[2]alphaextract[amask];[amask]scale=150:150[vmask];[3:v]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[4:v]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[5:v]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:reload=1:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2"  ${outputvideo}mp4
+
+# 多文件合成 （其他文件从 movie 的输入）
+ffmpeg -i ${rtmp} -filter_complex "movie=${png}[m0];movie=${mask}[m1];movie=${dh}[m2];movie=${gif}[m3];movie=${video1}[m4];[m0]crop=100:50:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[m4][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[0]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:reload=1:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2"  ${outputvideo}mp4
 
 
 # # 打开多个文件时可以把其他文件放到 filter 中的 movie 路径
 # ffmpeg -re -i ${office} -filter_complex "movie=${png}[m0];movie=${video1}[m1];[m0]scale=200:-1[m0scale];[m1]scale=300:-1[m1scale];[0][m0scale]overlay=2:2[out1];[out1][m1scale]overlay=200:100" -t 5 ${outputvideo}mp4
 
- ffmpeg -re -i ${screen5s} -filter_complex "scale=200:350" -t 5 ${outputvideo}mp4
+
+# # scale 视频
+#  ffmpeg -re -i ${screen5s} -filter_complex "scale=200:350" -t 5 ${outputvideo}mp4
 
 
 
@@ -97,3 +105,13 @@ screen5s=../files/resources/screen5s.mp4
 
 # # 源码 scale 大小
 # scale=200:-300
+
+
+# # 背景视频+预设轨迹多图片
+# movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];movie=/opt/application/tx-rtcStream/files/resources/mask.png[m1];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m2];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m3];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m4];[m0]crop=100:50:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[in][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[m4]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[ov5]subtitles=/opt/application/tx-rtcStream/files/resources/subtitles.srt[final];[final]drawtext=textfile=/opt/application/tx-rtcStream/files/resources/drawtext.txt:reload=1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2
+
+# # 添加一个视频（dh) 预设轨迹
+# movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];movie=/opt/application/tx-rtcStream/files/resources/mask.png[m1];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m2];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m3];movie=/opt/application/tx-rtcStream/files/resources/dh.mp4[m4];[m0]crop=100:50:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[in][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[m4]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[ov5]subtitles=/opt/application/tx-rtcStream/files/resources/subtitles.srt[final];[final]drawtext=textfile=/opt/application/tx-rtcStream/files/resources/drawtext.txt:reload=1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2
+
+# # 两个数字人视频
+# movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];movie=/opt/application/tx-rtcStream/files/resources/mask.png[m1];movie=/opt/application/tx-rtcStream/files/resources/dh.mp4[m2];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m3];movie=/opt/application/tx-rtcStream/files/resources/dh.mp4[m4];[m0]crop=100:50:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[in][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[m4]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[ov5]subtitles=/opt/application/tx-rtcStream/files/resources/subtitles.srt[final];[final]drawtext=textfile=/opt/application/tx-rtcStream/files/resources/drawtext.txt:reload=1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2
