@@ -56,6 +56,8 @@ static FilteringContext *filter_ctx;
 
 long long startTime = 0;
 
+long long frame_pts = 0; // 保证数据帧的 pts 严格增长
+
 const char *filterPath = "/opt/application/tx-rtcStream/server/clan/filter/input.txt";
 
 typedef struct StreamContext
@@ -586,6 +588,8 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index)
             break;
         }
 
+        filter->filtered_frame->pts = ++frame_pts;
+
         filter->filtered_frame->pict_type = AV_PICTURE_TYPE_NONE;
         ret = encode_write_frame(stream_index, 0);
 
@@ -631,7 +635,7 @@ int main(int argc, char **argv)
         FILE *f = fopen(filterPath, "r+");
         fgets(buff, 1024, f);
         fclose(f);
-        remove(filterPath);
+        // remove(filterPath);
         if ((ret = init_filters(buff)) < 0)
             goto end;
     }
@@ -645,18 +649,18 @@ int main(int argc, char **argv)
     while (1)
     {
 
-        const int open = access(filterPath, F_OK);
+        // const int open = access(filterPath, F_OK);
 
-        if (open != -1)
-        {
-            char buff[1024] = {0};
-            FILE *f = fopen(filterPath, "r+");
-            fgets(buff, 1024, f);
-            fclose(f);
-            remove(filterPath);
-            if ((ret = init_filters(buff)) < 0)
-                goto end;
-        }
+        // if (open != -1)
+        // {
+        //     char buff[1024] = {0};
+        //     FILE *f = fopen(filterPath, "r+");
+        //     fgets(buff, 1024, f);
+        //     fclose(f);
+        //     remove(filterPath);
+        //     if ((ret = init_filters(buff)) < 0)
+        //         goto end;
+        // }
 
         if ((ret = av_read_frame(ifmt_ctx, packet)) < 0)
             break;
@@ -689,7 +693,7 @@ int main(int argc, char **argv)
                 else if (ret < 0)
                     goto end;
 
-                stream->dec_frame->pts = stream->dec_frame->best_effort_timestamp;
+                // stream->dec_frame->pts = ++frame_pts;
                 ret = filter_encode_write_frame(stream->dec_frame, stream_index);
                 if (ret < 0)
                     goto end;
