@@ -588,7 +588,11 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index)
             break;
         }
 
-        filter->filtered_frame->pts = ++frame_pts;
+        filter->filtered_frame->pts = ++frame_pts; // 可以合成，但是音视频不对
+
+        // filter->filtered_frame->pts = filter->filtered_frame->best_effort_timestamp;
+
+        // printf("--- filter->filtered_frame->pts: %d \n", filter->filtered_frame->pts);
 
         filter->filtered_frame->pict_type = AV_PICTURE_TYPE_NONE;
         ret = encode_write_frame(stream_index, 0);
@@ -693,7 +697,7 @@ int main(int argc, char **argv)
                 else if (ret < 0)
                     goto end;
 
-                // stream->dec_frame->pts = ++frame_pts;
+                stream->dec_frame->pts = stream->dec_frame->best_effort_timestamp;
                 ret = filter_encode_write_frame(stream->dec_frame, stream_index);
                 if (ret < 0)
                     goto end;
