@@ -1,3 +1,21 @@
+// 用 ffprobe 获取的信息
+`Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/opt/application/tx-rtcStream/files/resources/screen18s.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf58.20.100
+  Duration: 00:00:17.40, start: 0.000000, bitrate: 1557 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, smpte170m/bt470bg/smpte170m, progressive), 720x1280, 1502 kb/s, 30 fps, 30 tbr, 90k tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, mono, fltp, 48 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+      vendor_id       : [0][0][0][0]`
+
+// 从 mediaInfo 获取的信息
 const info = {
     "creatingLibrary": {
         "name": "MediaInfoLib",
@@ -31,7 +49,7 @@ const info = {
                 "File_Created_Date_Local": "2022-12-09 18:44:58.316",
                 "File_Modified_Date": "UTC 2022-12-09 10:45:03.710",
                 "File_Modified_Date_Local": "2022-12-09 18:45:03.710",
-                "Encoded_Application": "Lavf58.20.100"
+                "Encoded_Application": "Lavf58.20.100" // *Lib*av*format version 58.20.100, info for debugging, and lavf is part of ffmpeg
             },
             {
                 "@type": "Video",
