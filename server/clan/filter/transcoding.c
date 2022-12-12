@@ -58,6 +58,8 @@ long long startTime = 0;
 
 long long frame_pts = 0; // 保证数据帧的 pts 严格增长
 
+long long prev_pts = 294;
+
 const char *filterPath = "/opt/application/tx-rtcStream/server/clan/filter/input.txt";
 
 typedef struct StreamContext
@@ -347,7 +349,11 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
                  dec_ctx->time_base.num, dec_ctx->time_base.den,
                  dec_ctx->sample_aspect_ratio.num,
                  dec_ctx->sample_aspect_ratio.den);
-
+        /**
+         * 添加单个 filter 到 filter graph，
+         * 所以如果在 init_filters 中对所有stream 添加了相同的 filter_desc, 最终的 graph 是相同的，但是会造成大量冗余信息
+         * 因此应该在构建 graph 时，根据配置，对不同的 stream 添加不同 filter
+         */
         ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in",
                                            args, NULL, filter_graph);
         if (ret < 0)
@@ -459,6 +465,9 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
         goto end;
     }
 
+    /**
+     * 在 filter graph 中添加部分 graph, 也就是把 filter chain 当做简化的 graph
+     */
     if ((ret = avfilter_graph_parse_ptr(filter_graph, filter_spec,
                                         &inputs, &outputs, NULL)) < 0)
         goto end;
@@ -588,9 +597,14 @@ static int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index)
             break;
         }
 
-        filter->filtered_frame->pts = ++frame_pts; // 可以合成，但是音视频不对
+        filter->filtered_frame->pts = ++frame_pts; // 可以合成，但是音视频字幕没有同步
 
         // filter->filtered_frame->pts = filter->filtered_frame->best_effort_timestamp;
+
+        // if (filter->filtered_frame->pts > 293 && filter->filtered_frame->pts < 10000)
+        // {
+        //     filter->filtered_frame->pts = ++prev_pts;
+        // }
 
         // printf("--- filter->filtered_frame->pts: %d \n", filter->filtered_frame->pts);
 
