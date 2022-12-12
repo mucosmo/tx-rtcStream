@@ -60,6 +60,8 @@ long long frame_pts = 0; // 保证数据帧的 pts 严格增长
 
 long long prev_pts = 294;
 
+long long t1;
+
 const char *filterPath = "/opt/application/tx-rtcStream/server/clan/filter/input.txt";
 
 typedef struct StreamContext
@@ -325,6 +327,7 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
     AVFilterInOut *outputs = avfilter_inout_alloc();
     AVFilterInOut *inputs = avfilter_inout_alloc();
     AVFilterGraph *filter_graph = avfilter_graph_alloc();
+    // 93 us
 
     if (!outputs || !inputs || !filter_graph)
     {
@@ -343,6 +346,8 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
             goto end;
         }
 
+        // 176 us
+
         snprintf(args, sizeof(args),
                  "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
                  dec_ctx->width, dec_ctx->height, dec_ctx->pix_fmt,
@@ -356,6 +361,8 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
          */
         ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in",
                                            args, NULL, filter_graph);
+        // 543 us
+
         if (ret < 0)
         {
             av_log(NULL, AV_LOG_ERROR, "Cannot create buffer source\n");
@@ -364,6 +371,8 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
 
         ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out",
                                            NULL, NULL, filter_graph);
+        // 559 us
+
         if (ret < 0)
         {
             av_log(NULL, AV_LOG_ERROR, "Cannot create buffer sink\n");
@@ -373,6 +382,7 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
         ret = av_opt_set_bin(buffersink_ctx, "pix_fmts",
                              (uint8_t *)&enc_ctx->pix_fmt, sizeof(enc_ctx->pix_fmt),
                              AV_OPT_SEARCH_CHILDREN);
+
         if (ret < 0)
         {
             av_log(NULL, AV_LOG_ERROR, "Cannot set output pixel format\n");
@@ -458,6 +468,7 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
     inputs->filter_ctx = buffersink_ctx;
     inputs->pad_idx = 0;
     inputs->next = NULL;
+    // 570 us
 
     if (!outputs->name || !inputs->name)
     {
@@ -469,11 +480,13 @@ static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
      * 在 filter graph 中添加部分 graph, 也就是把 filter chain 当做简化的 graph
      */
     if ((ret = avfilter_graph_parse_ptr(filter_graph, filter_spec,
-                                        &inputs, &outputs, NULL)) < 0)
+                                        &inputs, &outputs, NULL)) < 0) // 占用了最大的时间
         goto end;
+    // 76160 us
 
-    if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0)
+    if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0) // 第二大时间
         goto end;
+    // 104028 us
 
     /* Fill FilteringContext */
     fctx->buffersrc_ctx = buffersrc_ctx;
@@ -647,16 +660,19 @@ int main(int argc, char **argv)
     if ((ret = open_output_file(argv[2])) < 0)
         goto end;
 
+    t1 = av_gettime(); // us
     if ((access(filterPath, F_OK)) != -1)
     {
         char buff[1024] = {0};
         FILE *f = fopen(filterPath, "r+");
         fgets(buff, 1024, f);
-        fclose(f);
-        // remove(filterPath);
-        if ((ret = init_filters(buff)) < 0)
+        fclose(f); // 38 us
+        remove(filterPath);
+        if ((ret = init_filters(buff)) < 0) // 109245 us
             goto end;
     }
+
+    printf("--- 1 init_filter %lld us\n", av_gettime() - t1);
 
     if (!(packet = av_packet_alloc()))
         goto end;
@@ -667,18 +683,19 @@ int main(int argc, char **argv)
     while (1)
     {
 
-        // const int open = access(filterPath, F_OK);
+        long long t2 = av_gettime();
+        const int open = access(filterPath, F_OK); // 10-20 ms， 这里无法容忍
 
-        // if (open != -1)
-        // {
-        //     char buff[1024] = {0};
-        //     FILE *f = fopen(filterPath, "r+");
-        //     fgets(buff, 1024, f);
-        //     fclose(f);
-        //     remove(filterPath);
-        //     if ((ret = init_filters(buff)) < 0)
-        //         goto end;
-        // }
+        if (open != -1)
+        {
+            char buff[1024] = {0};
+            FILE *f = fopen(filterPath, "r+");
+            fgets(buff, 1024, f);
+            fclose(f);
+            remove(filterPath);
+            if ((ret = init_filters(buff)) < 0) // 重新读取文件再次初始化时，需要 154048 us
+                goto end;
+        }
 
         if ((ret = av_read_frame(ifmt_ctx, packet)) < 0)
             break;
