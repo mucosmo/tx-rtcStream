@@ -672,8 +672,6 @@ int main(int argc, char **argv)
             goto end;
     }
 
-    printf("--- 1 init_filter %lld us\n", av_gettime() - t1);
-
     if (!(packet = av_packet_alloc()))
         goto end;
 
@@ -684,7 +682,7 @@ int main(int argc, char **argv)
     {
 
         long long t2 = av_gettime();
-        const int open = access(filterPath, F_OK); // 10-20 ms， 这里无法容忍
+        const int open = access(filterPath, F_OK); // 10-20 us，可以容忍，相当于每一秒钟（25帧）耽误 500us (0.05%)
 
         if (open != -1)
         {
@@ -693,7 +691,7 @@ int main(int argc, char **argv)
             fgets(buff, 1024, f);
             fclose(f);
             remove(filterPath);
-            if ((ret = init_filters(buff)) < 0) // 重新读取文件再次初始化时，需要 154048 us
+            if ((ret = init_filters(buff)) < 0) // 重新读取文件再次初始化时，需要 154048 us (  0.2秒的延迟无法接受，应当设法减小)
                 goto end;
         }
 
