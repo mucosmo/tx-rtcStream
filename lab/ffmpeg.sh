@@ -15,7 +15,7 @@ png=../files/resources/fileimage.png
 gif=../files/resources/gif.gif
 mask=../files/resources/mask.png
 svg=../files/resources/svg.svg
-rtmp=rtmp://175.178.31.221:51013/live/m25257031740948481
+rtmp='rtmp\\://175.178.31.221\\:51013/live/m25822721816395777'
 m3u8=http://hz-test.ikandy.cn:60125/files/1669358475054g2l5bihp6e/mediasoup_live.m3u8
 dh=../files/resources/dh.mp4
 subtitles=../files/resources/subtitles.srt
@@ -23,6 +23,9 @@ font=/usr/share/fonts/chinese/SIMKAI.TTF
 drawtext="你好啊"
 drawtextfile=../files/resources/drawtext.txt
 screen5s=../files/resources/screen5s.mp4
+koreaRtmp=rtmp://mobliestream.c3tv.com:554/live/goodtv.sdp
+
+onlinepic='https\\://alifei05.cfp.cn/creative/vcg/veer/1600water/veer-412747764.jpg' // 转义字符，避免 : 出现歧义
 
 
 # ffmpeg -hide_banner -h filter=transpose
@@ -74,8 +77,12 @@ screen5s=../files/resources/screen5s.mp4
 # # 多文件合成
 # ffmpeg -i ${video1} -i ${png} -i ${mask} -i ${video2} -i ${gif} -i ${dh}  -filter_complex "[1]crop=100:50:200:200[cropped1];[2]alphaextract[amask];[amask]scale=150:150[vmask];[3:v]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[ov2][gif]overlay=W-w-10:H/2[ov3];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=10:10[ov2];[4:v]scale=50:50[gif];[ov3][ov4]overlay=-20+5*n:H*0.2[ov5];[5:v]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov5]subtitles=${subtitles}[final];[final]drawtext=textfile=${drawtextfile}:reload=1:fontfile=${font}:x=(w-text_w)/2:y=h-80*t:fontcolor=white:fontsize=40:shadowx=2:shadowy=2"  ${outputvideo}mp4
 
-# 多文件合成 （所有文件从 movie 的输入）
-ffmpeg -i /opt/application/tx-rtcStream/files/resources/screen18s.mp4  -filter_complex "movie=/opt/application/tx-rtcStream/files/resources/screen5s.mp4[0];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];movie=/opt/application/tx-rtcStream/files/resources/mask.png[m1];movie=/opt/application/tx-rtcStream/files/resources/filevideo.mp4[m2];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m3];movie=/opt/application/tx-rtcStream/files/resources/dh.mp4[m4];[m0]crop=200:200:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=100:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[m4]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+n:100[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=text=1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=10:y=100:fontcolor=white:fontsize=100:shadowx=2:shadowy=2"  ${outputvideo}mp4
+# # 多文件合成 （所有文件从 movie 的输入）
+# ffmpeg -i /opt/application/tx-rtcStream/files/resources/screen18s.mp4  -filter_complex "movie=/opt/application/tx-rtcStream/files/resources/screen5s.mp4[0];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m0];movie=/opt/application/tx-rtcStream/files/resources/mask.png[m1];movie=/opt/application/tx-rtcStream/files/resources/filevideo.mp4[m2];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m3];movie=/opt/application/tx-rtcStream/files/resources/dh.mp4[m4];[m0]crop=200:200:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=100:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[m4]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+n:100[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=text=1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=10:y=100:fontcolor=white:fontsize=100:shadowx=2:shadowy=2"  ${outputvideo}mp4
+
+# 从 movie 输入 https 文件, 注意转义字符/单引号
+# 如果是从 txt 文件中读取，应该写成 movie='rtmp\://175.178.31.221\:51013/live/m25822721816395777'
+ffmpeg -i /opt/application/tx-rtcStream/files/resources/screen5s.mp4  -filter_complex "movie=/opt/application/tx-rtcStream/files/resources/screen5s.mp4[0];movie='https\\://alifei05.cfp.cn/creative/vcg/veer/1600water/veer-412747764.jpg'[m0];movie=${mask}[m1];movie=${video1}[m2];movie=/opt/application/tx-rtcStream/files/resources/fileimage.png[m3];movie='rtmp\\://175.178.31.221\\:51013/live/m25824109577371649'[m4];[m0]crop=200:200:200:200[cropped1];[m1]alphaextract[amask];[amask]scale=150:150[vmask];[m2]scale=150:150[cropped3];[cropped3][vmask]alphamerge[avatar];[0][cropped1]overlay=W-w-10:10[ov1];[ov1][avatar]overlay=100:10[ov2];[m3]scale=50:50[gif];[ov2][gif]overlay=W-w-10:H/2[ov3];[m4]scale=200:300,chromakey=0x00ff00:0.3:0.05[ov4];[ov3][ov4]overlay=-20+n:100[ov5];[ov5]subtitles=${subtitles}[final];[final]drawtext=text=1:fontfile=/usr/share/fonts/chinese/SIMKAI.TTF:x=10:y=100:fontcolor=white:fontsize=100:shadowx=2:shadowy=2"  ${outputvideo}mp4
 
 
 # # 打开多个文件时可以把其他文件放到 filter 中的 movie 路径
