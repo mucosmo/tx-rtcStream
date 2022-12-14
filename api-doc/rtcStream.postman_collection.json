@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "99eeacd5-6075-460f-86a8-fe7b42ba932c",
+		"name": "rtcStream",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13482062"
+	},
+	"item": [
+		{
+			"name": "stream",
+			"item": [
+				{
+					"name": "pull-dm-sync",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mode\": \"sync\",\r\n    \"stream\": {\r\n        \"type\": \"stream\",\r\n        \"mediasoup\": {\r\n            \"format\": \"pcm\",\r\n            \"room\": \"room1\",\r\n            \"user\": \"user1\"\r\n        }\r\n    },\r\n    \"config\": {\r\n        \"token\": {\r\n            \"asr\": {\r\n                \"secretKey\": \"scCYiefXFk386rOqBLHCvY3d7QWSDpHh\",\r\n                \"secretId\": \"AKIDWtumSvCHB6vVs8D4qU3juzzvcDfwzrXP\",\r\n                \"appId\": 1308279827\r\n            }\r\n        },\r\n        \"config\": {\r\n            \"task\": {\r\n                \"supplier\": \"tencent\"\r\n            },\r\n            \"param\": {\r\n                \"real_talk\": {\r\n                    \"engine_model_type\": \"16k_zh\",\r\n                    \"voice_format\": 1,\r\n                    \"needvad\": 0,\r\n                    \"filter_dirty\": 0,\r\n                    \"filter_modal\": 0,\r\n                    \"filter_punc\": 0,\r\n                    \"convert_num_mode\": 1\r\n                },\r\n                \"short_text\": {\r\n                    \"engine_model_type\": \"16k_zh\",\r\n                    \"voice_format\": \"pcm\",\r\n                    \"filter_dirty\": 0,\r\n                    \"filter_modal\": 0,\r\n                    \"filter_punc\": 0,\r\n                    \"convert_num_mode\": 1\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/pull/dm",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"pull",
+								"dm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pull-dm-async",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mode\": \"async\",\r\n    \"stream\": {\r\n        \"type\": \"file\",\r\n        \"file\": {\r\n            \"format\": \"pcm\",\r\n            \"name\": \"file1\"\r\n        }\r\n    },\r\n    \"config\": {\r\n        \"token\": {\r\n            \"asr\": {\r\n                \"secretKey\": \"scCYiefXFk386rOqBLHCvY3d7QWSDpHh\",\r\n                \"secretId\": \"AKIDWtumSvCHB6vVs8D4qU3juzzvcDfwzrXP\",\r\n                \"appId\": 1308279827\r\n            }\r\n        },\r\n        \"config\": {\r\n            \"task\": {\r\n                \"supplier\": \"tencent\"\r\n            },\r\n            \"param\": {\r\n                \"real_talk\": {\r\n                    \"engine_model_type\": \"16k_zh\",\r\n                    \"voice_format\": 1,\r\n                    \"needvad\": 0,\r\n                    \"filter_dirty\": 0,\r\n                    \"filter_modal\": 0,\r\n                    \"filter_punc\": 0,\r\n                    \"convert_num_mode\": 1\r\n                },\r\n                \"short_text\": {\r\n                    \"engine_model_type\": \"16k_zh\",\r\n                    \"voice_format\": \"pcm\",\r\n                    \"filter_dirty\": 0,\r\n                    \"filter_modal\": 0,\r\n                    \"filter_punc\": 0,\r\n                    \"convert_num_mode\": 1\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/pull/dm",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"pull",
+								"dm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pull-live",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"room\": \"room1\",\r\n    \"user\": \"user1\",\r\n    \"stream\": \"audio\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/pull/live",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"pull",
+								"live"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ffmpeg-composite",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pulls\": [\r\n        {\r\n            \"source\": \"Rtc\",\r\n            \"room\": \"room1\",\r\n            \"user\": \"user1\",\r\n            \"streams\": {\r\n                \"audio\": [\r\n                    {\r\n                        \"operation\": \"transcript\",\r\n                        \"params\": \"Unknown Type: any\"\r\n                    },\r\n                    {\r\n                        \"operation\": \"transcript\",\r\n                        \"params\": \"Unknown Type: any\"\r\n                    }\r\n                ],\r\n                \"video\": [\r\n                    {\r\n                        \"operation\": \"transcript\",\r\n                        \"params\": \"Unknown Type: any\"\r\n                    }\r\n                ],\r\n                \"av\": [\r\n                    {\r\n                        \"operation\": \"transcript\",\r\n                        \"params\": \"Unknown Type: any\"\r\n                    }\r\n                ]\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/ffmpeg/composite",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"ffmpeg",
+								"composite"
+							]
+						},
+						"description": "ffmpeg 流合成的控制参数"
+					},
+					"response": []
+				},
+				{
+					"name": "pull-composite",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": \"user1\",\r\n    \"room\": \"room1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/pull",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"pull"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "session-stop",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sessionId\": \"tx_ny15iwouxut8bvo3k97x\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/session/stop",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"session",
+								"stop"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "push-dh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"room\": \"room1\",\r\n    \"stream\": \"live\",\r\n    \"path\": \"12\",\r\n    \"text\": \"甜新科技成立于2016年，定位为服务保险、银行以及消费金融公司的科技公司，致力于在营销科技领域，为行业客户提供以深度融合AI+视频为基础的场景化服务解决方案\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/stream/push",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"stream",
+								"push"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "render",
+			"item": [
+				{
+					"name": "01-初始化：模板",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"template\": {\r\n        \"id\": \"template123232sdfsde#$\",\r\n        \"profile\": {\r\n            \"video\": 3,\r\n            \"picture\": 1,\r\n            \"drawtext\": 1,\r\n            \"subtitles\": 1\r\n        },\r\n        \"regions\": [\r\n            {\r\n                \"id\": \"region_0.0.0\",\r\n                \"type\": \"video\",\r\n                \"srcId\": \"src_12errsdsd\",\r\n                \"src\": \"\",\r\n                \"filters\": [\r\n                    {\r\n                        \"id\": \"filter_sssdsljjsdlsj\",\r\n                        \"seq\": 0,\r\n                        \"name\": \"scale\",\r\n                        \"options\": {\r\n                            \"w\": -1,\r\n                            \"h\": 100\r\n                        }\r\n                    }\r\n                ],\r\n                \"area\": {\r\n                    \"x\": 500,\r\n                    \"y\": 50,\r\n                    \"w\": 100,\r\n                    \"h\": 200\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"region_1.0.0\",\r\n                \"type\": \"video\",\r\n                \"srcId\": \"src_12errwwsdsd\",\r\n                \"src\": \"\",\r\n                \"filters\": [\r\n                    {\r\n                        \"id\": \"filter_sdsljjsdlsj\",\r\n                        \"seq\": 1,\r\n                        \"name\": \"scale\",\r\n                        \"options\": {\r\n                            \"w\": 200,\r\n                            \"h\": 300\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": \"filter_ssscvdsljjsdlsj\",\r\n                        \"seq\": 3,\r\n                        \"name\": \"chromakey\",\r\n                        \"options\": {\r\n                            \"color\": \"0x00ff00\",\r\n                            \"similarity\": 0.3,\r\n                            \"blend\": 0.05\r\n                        }\r\n                    }\r\n                ],\r\n                \"area\": {\r\n                    \"x\": \"5*n\",\r\n                    \"y\": \"500+n*(n-50)\",\r\n                    \"w\": 100,\r\n                    \"h\": 200\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"region_1.0.1\",\r\n                \"type\": \"video\",\r\n                \"srcId\": \"src_12eddrrsdsd\",\r\n                \"src\": \"\",\r\n                \"filters\": [\r\n                    {\r\n                        \"id\": \"filter_123dddds24@32\",\r\n                        \"seq\": 1,\r\n                        \"name\": \"scale\",\r\n                        \"options\": {\r\n                            \"w\": \"200\",\r\n                            \"h\": \"200\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": \"filter_sdsljjsdlsj\",\r\n                        \"seq\": 0,\r\n                        \"name\": \"crop\",\r\n                        \"options\": {\r\n                            \"w\": \"700\",\r\n                            \"h\": \"700\",\r\n                            \"x\": \"100\",\r\n                            \"y\": \"200\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": \"filter_3ddjhsdgd12s32\",\r\n                        \"seq\": 2,\r\n                        \"name\": \"shapemask\",\r\n                        \"options\": {\r\n                            \"shape\": \"circle\"\r\n                        }\r\n                    }\r\n                ],\r\n                \"area\": {\r\n                    \"x\": 10,\r\n                    \"y\": 10,\r\n                    \"w\": 100,\r\n                    \"h\": 200\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"region_2.0.1\",\r\n                \"type\": \"picture\",\r\n                \"srcId\": \"src_1234wssdsss12345dsd\",\r\n                \"src\": \"\",\r\n                \"filters\": [\r\n                    {\r\n                        \"id\": \"filter_12324@32\",\r\n                        \"seq\": 0,\r\n                        \"name\": \"crop\",\r\n                        \"options\": {\r\n                            \"w\": \"100\",\r\n                            \"h\": \"200\",\r\n                            \"x\": \"200\",\r\n                            \"y\": \"300\"\r\n                        }\r\n                    }\r\n                ],\r\n                \"area\": {\r\n                    \"x\": \"100+(n-20)*(n-20)\",\r\n                    \"y\": 200,\r\n                    \"w\": 100,\r\n                    \"h\": 200\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"region_4.0.0\",\r\n                \"type\": \"drawtext\",\r\n                \"options\": {\r\n                    \"textfile\": \"/opt/application/tx-rtcStream/files/resources/drawtext.txt\",\r\n                    \"x\": \"(w-text_w)/2-n\",\r\n                    \"y\": \"h-150*t-n*5\",\r\n                    \"fontfile\": \"/usr/share/fonts/chinese/SIMKAI.TTF\",\r\n                    \"fontcolor\": \"red\",\r\n                    \"fontsize\": 60,\r\n                    \"shadowx\": 20,\r\n                    \"shadowy\": 10\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"region_3.0.0\",\r\n                \"type\": \"subtitles\",\r\n                \"options\": {\r\n                    \"filename\": \"/opt/application/tx-rtcStream/files/resources/subtitles.srt\"\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"srcs\": [\r\n        {\r\n            \"id\": \"src_12errsdsd\",\r\n            \"type\": \"video\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/video2.mp4\",\r\n            \"metadata\": {\r\n                \"duration\": \"00:01:02.21\",\r\n                \"bitrate\": 1160,\r\n                \"codec\": \"h264\",\r\n                \"colorSpace\": \"yuv420\",\r\n                \"w\": 800,\r\n                \"h\": 600,\r\n                \"fps\": 30,\r\n                \"tbn\": 30000,\r\n                \"tbr\": 30\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_12eddrrsdsd\",\r\n            \"type\": \"video\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/me.mp4\",\r\n            \"metadata\": {\r\n                \"duration\": \"00:01:02.21\",\r\n                \"bitrate\": 1160,\r\n                \"codec\": \"h264\",\r\n                \"colorSpace\": \"yuv420\",\r\n                \"w\": 800,\r\n                \"h\": 600,\r\n                \"fps\": 30,\r\n                \"tbn\": 30000,\r\n                \"tbr\": 30\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_12errwwsdsd\",\r\n            \"type\": \"video\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/dh.mp4\",\r\n            \"metadata\": {\r\n                \"duration\": \"00:02:02.50\",\r\n                \"bitrate\": 24,\r\n                \"codec\": \"mp3\",\r\n                \"channels\": 1,\r\n                \"samplerate\": 16000\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_1234wssdsss12345dsd\",\r\n            \"type\": \"picture\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/fileimage.png\",\r\n            \"metadata\": {\r\n                \"codec\": \"png\",\r\n                \"colorSpace\": \"rgb24\",\r\n                \"w\": 1200,\r\n                \"h\": 900,\r\n                \"fps\": 25\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_1234dd34wssdsdsd\",\r\n            \"type\": \"picture\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/mask.png\",\r\n            \"metadata\": {\r\n                \"codec\": \"png\",\r\n                \"colorSpace\": \"rgb24\",\r\n                \"w\": 1200,\r\n                \"h\": 900,\r\n                \"fps\": 25\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_1234w12sssdsd\",\r\n            \"type\": \"liveCaption\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/subtitles.srt\",\r\n            \"text\": \"hello\"\r\n        },\r\n        {\r\n            \"id\": \"src_1234wswsss1asdsd\",\r\n            \"type\": \"subtitle\",\r\n            \"path\": \"/opt/application/tx-rtcStream/files/resources/subtitles.srt\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/template",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"template"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02-初始化：数据源信息",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"srcs\": [\r\n        {\r\n            \"id\": \"src_12errsdsd\",\r\n            \"type\": \"video\",\r\n            \"path\": \"dh.mp4\",\r\n            \"metadata\": {\r\n                \"duration\": \"00:01:02.21\",\r\n                \"bitrate\": 1160,\r\n                \"codec\": \"h264\",\r\n                \"colorSpace\": \"yuv420\",\r\n                \"w\": 800,\r\n                \"h\": 600,\r\n                \"fps\": 30,\r\n                \"tbn\": 30000,\r\n                \"tbr\": 30\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_12errwwsdsd\",\r\n            \"type\": \"audio\",\r\n            \"path\": \"speech.mp3\",\r\n            \"metadata\": {\r\n                \"duration\": \"00:02:02.50\",\r\n                \"bitrate\": 24,\r\n                \"codec\": \"mp3\",\r\n                \"channels\": 1,\r\n                \"samplerate\": 16000\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_1234wsdsd\",\r\n            \"type\": \"picture\",\r\n            \"path\": \"face.png\",\r\n            \"metadata\": {\r\n                \"codec\": \"png\",\r\n                \"colorSpace\": \"rgb24\",\r\n                \"w\": 1200,\r\n                \"h\": 900,\r\n                \"fps\": 25\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"src_1234wsdsd\",\r\n            \"type\": \"liveCaption\",\r\n            \"path\": \"subtitles.src\",\r\n            \"text\": \"hello\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/src",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"src"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "05-初始化：给模板区域添加滤波器",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"regionId\": \"region_0.1.3\",\r\n        \"filters\": [\r\n            {\r\n                \"id\": \"filter_12324@32\",\r\n                \"name\": \"drawtext\",\r\n                \"options\": {\r\n                    \"fontsize\": 10,\r\n                    \"color\": \"green\",\r\n                    \"fontfile\": \"SIMKAI.TTF\",\r\n                    \"textfile\": \"subtitles.srt\",\r\n                    \"weight\": \"light\",\r\n                    \"background\": \"red\",\r\n                    \"opacity\": 0.2\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"filter_123234@32\",\r\n                \"name\": \"alphaextract\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"regionId\": \"region_0.1.3\",\r\n        \"filters\": [\r\n            {\r\n                \"id\": \"filter_12qwe34@32\",\r\n                \"name\": \"chromakey\",\r\n                \"options\": {\r\n                    \"color\": \"0x00ff00\",\r\n                    \"similarity\": 0.3,\r\n                    \"blend\": 0.4\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"regionId\": \"region_0.1.3\",\r\n        \"filters\": [\r\n            {\r\n                \"id\": \"filter_12003we34@32\",\r\n                \"name\": \"drawtext\",\r\n                \"options\": {\r\n                    \"fontsize\": 10,\r\n                    \"color\": \"green\",\r\n                    \"fontfile\": \"SIMKAI.TTF\",\r\n                    \"textfile\": \"subtitles.srt\",\r\n                    \"weight\": \"light\",\r\n                    \"background\": \"red\",\r\n                    \"opacity\": 0.2\r\n                }\r\n            }\r\n        ]\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/template/filter",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"template",
+								"filter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "03-控制：数据源到模板区域的映射",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"regions\": [\r\n        {\r\n            \"regionId\": \"region_0.1.2\",\r\n            \"srcId\": \"src_12errsdsd\"\r\n        },\r\n        {\r\n            \"regionId\": \"region_0.1.3\",\r\n            \"srcId\": \"src_1234wsdsd\"\r\n        },\r\n        {\r\n            \"regionId\": \"region_1.1.2\",\r\n            \"srcId\": \"src_1234wsdsd\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/region/src",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"region",
+								"src"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "04-增量控制：对模板区域的空间控制",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"regions\": [\r\n        {\r\n            \"regionId\": \"region_0.1.2\",\r\n            \"update\": {\r\n                \"area\": {\r\n                    \"x\": 1,\r\n                    \"y\": 2,\r\n                    \"w\": 3,\r\n                    \"h\": 4\r\n                },\r\n                \"scale\": {\r\n                    \"x\": 0.25,\r\n                    \"y\": 22\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"regionId\": \"region_0.1.1\",\r\n            \"update\": {\r\n                \"area\": {\r\n                    \"x\": 10,\r\n                    \"y\": 20,\r\n                    \"w\": 1200,\r\n                    \"h\": 200\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"regionId\": \"region_1.1.2\",\r\n            \"update\": {\r\n                 \"area\": {\r\n                    \"x\": 512,\r\n                    \"w\": 321\r\n                },\r\n                \"scale\": {\r\n                    \"x\": 0.5,\r\n                    \"y\": 1.5\r\n                }\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/region/space",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"region",
+								"space"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "06-控制：增减模板区域滤波器",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"regions\": [\r\n        {\r\n            \"regionId\": \"region_0.1.2\",\r\n            \"filters\": [\r\n                {\r\n                    \"id\": \"filter_12324@32\",\r\n                    \"type\":\"new\",\r\n                    \"name\": \"drawtext\",\r\n                    \"options\": {\r\n                        \"fontsize\": 10,\r\n                        \"color\": \"green\",\r\n                        \"fontfile\": \"SIMKAI.TTF\",\r\n                        \"textfile\": \"subtitles.srt\",\r\n                        \"weight\": \"light\",\r\n                        \"background\": \"red\",\r\n                        \"opacity\": 0.2\r\n                    }\r\n                }\r\n            ]\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/region/filter",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"region",
+								"filter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "06-控制：更新滤波器参数",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"filters\": [\r\n        {\r\n            \"filterId\": \"filter_12324@32\",\r\n            \"update\": {\r\n                \"text\": \"word has changed\"\r\n            }\r\n        },\r\n        {\r\n            \"filterId\": \"filter_12003we34@32\",\r\n            \"update\": {\r\n                \"opacity\": 0.511\r\n            }\r\n        },\r\n        {\r\n            \"filterId\": \"filter_12qwe34@32\",\r\n            \"update\": {\r\n                \"blend\": 0.41\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{streamPpr_url}}/render/filter/update",
+							"host": [
+								"{{streamPpr_url}}"
+							],
+							"path": [
+								"render",
+								"filter",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
