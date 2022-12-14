@@ -62,6 +62,8 @@ long long prev_pts = 294;
 
 long long t1;
 
+long filter_graph_len=4096; //限制读取长度
+
 const char *filterPath = "/opt/application/tx-rtcStream/server/clan/filter/input.txt";
 
 typedef struct StreamContext
@@ -320,7 +322,7 @@ static int open_output_file(const char *filename)
 static int init_filter(FilteringContext *fctx, AVCodecContext *dec_ctx,
                        AVCodecContext *enc_ctx, const char *filter_spec)
 {
-    char args[4096];
+    char args[filter_graph_len];
     int ret = 0;
     const AVFilter *buffersrc = NULL;
     const AVFilter *buffersink = NULL;
@@ -667,9 +669,9 @@ int main(int argc, char **argv)
     {
         char buff[4096] = {0};
         FILE *f = fopen(filterPath, "r+");
-        fgets(buff, 4096, f);
+        fgets(buff, filter_graph_len, f);
         fclose(f); // 38 us
-        // remove(filterPath);
+        remove(filterPath);
         if ((ret = init_filters(buff)) < 0) // 109245 us
             goto end;
     }
@@ -686,17 +688,17 @@ int main(int argc, char **argv)
         long long t2 = av_gettime();
         const int open = access(filterPath, F_OK); // 10-20 us，可以容忍，相当于每一秒钟（25帧）耽误 500us (0.05%)
 
-        // // input 文件一直存在时，不断的渲染会导致线程卡死，所以必须在读取 filter graph 后，删除改文件，或者用其他方式通知程序，filter graph 已经更新
-        //  if (open != -1)
-        //  {
-        //      char buff[1024] = {0};
-        //      FILE *f = fopen(filterPath, "r+");
-        //      fgets(buff, 1024, f);
-        //      fclose(f);
-        //      remove(filterPath);
-        //      if ((ret = init_filters(buff)) < 0) // 重新读取文件再次初始化时，需要 154048 us (  0.2秒的延迟无法接受，应当设法减小)
-        //          goto end;
-        //  }
+        // input 文件一直存在时，不断的渲染会导致线程卡死，所以必须在读取 filter graph 后，删除改文件，或者用其他方式通知程序，filter graph 已经更新
+         if (open != -1)
+         {
+             char buff[4096] = {0};
+             FILE *f = fopen(filterPath, "r+");
+             fgets(buff, filter_graph_len, f);
+             fclose(f);
+             remove(filterPath);
+             if ((ret = init_filters(buff)) < 0) // 重新读取文件再次初始化时，需要 154048 us (  0.2秒的延迟无法接受，应当设法减小)
+                 goto end;
+         }
 
         if ((ret = av_read_frame(ifmt_ctx, packet)) < 0)
             break;
