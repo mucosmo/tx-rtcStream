@@ -2,8 +2,7 @@ var ffi = require('ffi-napi');
 
 const fs = require('fs');
 var filter = ffi.Library('./filter', {
-    'avfilter': ['int', ['string', 'string']],
-    "readfile": ['int', ['string', 'string']],
+    'avfilter': ['int', ['string', 'string', 'string']],
     "pushStream": ['int', ['string', 'string']],
 
 });
@@ -15,7 +14,7 @@ const output = '/opt/application/tx-rtcStream/server/clan/output.txt';
 
 const rtmp = 'rtmp://121.5.133.154:1935/myapp/12345';
 
-// filter.avfilter(dhVideo, input);
+// filter.avfilter(offiveVideo, input, rtmp);
 filter.pushStream(offiveVideo, rtmp);
 
 
