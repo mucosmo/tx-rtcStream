@@ -299,7 +299,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"regions\": [\r\n        {\r\n            \"regionId\": \"region_2.1.1\",\r\n            \"filters\": [\r\n                {\r\n                    \"id\": \"filter_12dd324@32\",\r\n                    \"type\": \"add\",\r\n                    \"seq\": 0,\r\n                    \"name\": \"gblur\",\r\n                    \"options\": {\r\n                        \"sigma\": \"20\",\r\n                        \"steps\": \"2\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"filter_12dd324@32\",\r\n                    \"type\": \"delete\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"templateId\": \"template123232sdfsde#$\",\r\n    \"regions\": [\r\n        {\r\n            \"regionId\": \"region_2.1.1\",\r\n            \"filters\": {\r\n                \"add\": [\r\n                    {\r\n                        \"id\": \"filter_12dd324@32\",\r\n                        \"seq\": 0,\r\n                        \"name\": \"gblur\",\r\n                        \"options\": {\r\n                            \"sigma\": \"20\",\r\n                            \"steps\": \"2\"\r\n                        }\r\n                    }\r\n                ],\r\n                \"delete\": [\r\n                    \"filter_12324@32\"\r\n                ]\r\n            }\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
