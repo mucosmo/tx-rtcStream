@@ -1,6 +1,6 @@
-import RTCFactory from "./RTCFactory";
+import RTCFactory from "./RTCFactory.js";
 import axios from "axios";
-import LibGenerateUserSig from "./lib-generate-test-usersig-es.min";
+import LibGenerateUserSig from "./lib-generate-test-usersig-es.min.js";
 
 class RTC2 {
   constructor(spec) {
@@ -18,7 +18,7 @@ class RTC2 {
       "https://hz-test.ikandy.cn:60006/api/resource/sign",
       params.param
     );
-    console.log("response:", response.data.data);
+    console.log("response:", response.data);
     const result = response.data.data;
     // const result = {}
 
@@ -64,7 +64,7 @@ class RTC2 {
       this.client = this.RtcObject.getClient();
     } else if (this.sp == "mediasoup") {
       const userId = params.userId;
-      const userName = 'params.userName';
+      const userName = params.userName;
       const roomId = params.roomId;
       //初始化的时候实例化对象
       const options = { userId, roomId, userName };

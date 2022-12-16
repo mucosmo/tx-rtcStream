@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "dependencies": {
+    "agora-rtc-sdk-ng": "^4.15.1",
+    "axios": "^1.2.1",
+    "baidurtc": "^1.1.18",
+    "mediasoup-client": "^3.6.68",
+    "protoo-client": "^4.0.6",
+    "trtc-js-sdk": "^4.15.1"
+  }
+}

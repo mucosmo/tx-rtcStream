@@ -1,5 +1,5 @@
 import "baidurtc";
-import RTC_BASE from "./rtc_base";
+import RTC_BASE from "./rtc_base.js";
 
 class BRTC extends RTC_BASE {
   constructor(options) {
