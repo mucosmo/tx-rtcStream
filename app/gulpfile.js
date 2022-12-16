@@ -55,7 +55,7 @@ const cssBase64 = require('gulp-css-base64');
 const nib = require('nib');
 const browserSync = require('browser-sync');
 
-const PKG = require('./package.json');
+const PKG = require('./package');
 const BANNER = fs.readFileSync('banner.txt').toString();
 const BANNER_OPTIONS =
 {
@@ -122,7 +122,7 @@ function bundle(options)
 			.pipe(source(`${PKG.name}.js`))
 			.pipe(buffer())
 			.pipe(rename(`${PKG.name}.js`))
-			.pipe(gulpif('*.js',uglify()
+			.pipe(gulpif('*.js', uglify()
 			))
 			.pipe(header(BANNER, BANNER_OPTIONS))
 			.pipe(gulp.dest(OUTPUT_DIR));

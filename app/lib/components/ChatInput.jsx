@@ -78,7 +78,7 @@ class ChatInput extends React.Component
 			if (!match)
 			{
 
-				console.log('--send chat message')
+				console.log('--send chat message');
 				text = text.trim();
 
 				roomClient.sendChatMessage(text);
